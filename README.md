@@ -4,7 +4,8 @@ Some parsers and lexical analysers created with GNU Bison and Flex open source t
 Use example:
 
 ```
-bison rpcalc.y -o generated/rpcalc.tab.c     
-cc generated/rpcalc.tab.c -lm -o build/rpcalc
-build/rpcalc # Ctrl+D to leave
+cd src
+make rp
+../build/rpcalc # Ctrl+D to leave
+make clean
 ```
