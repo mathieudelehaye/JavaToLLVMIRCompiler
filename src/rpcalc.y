@@ -1,4 +1,4 @@
-/* Reverse polish notation (RPN) calculator. */
+/* Reverse polish notation (RPN) calculator */
 
 %{
 #include <math.h> // pow

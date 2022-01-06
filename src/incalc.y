@@ -1,9 +1,15 @@
-/* Infix notation calculator--calc */
+/* Infix notation (IN) calculator */
 
 %{
+#include <math.h> // pow
+#include <stdio.h> // printf
+#include <ctype.h>
+
 #define YYSTYPE double
 
-#include <math.h> // pow
+// forward declarations
+int yylex ();
+void yyerror (char *s);
 %}
 
 /* Bison (BI) Declarations */
@@ -34,3 +40,7 @@ exp:      NUM                { $$ = $1;         }
 ;
 
 %%
+
+/* Additional C code */
+
+#include "../src/calc_main.h"
