@@ -78,15 +78,15 @@
 /* Copy the first part of user declarations.  */
 #line 3 "rpcalc.y"
 
-#define YYSTYPE double
-
 #include <math.h> // pow
 #include <stdio.h> // printf
 #include <ctype.h>
 
+#define YYSTYPE double
+
 // forward declarations
-int yylex();
-void yyerror();
+int yylex ();
+void yyerror (char *s);
 
 
 /* Enabling traces.  */
@@ -120,7 +120,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 124 "generated/rpcalc.tab.c"
+#line 124 "../generated/rpcalc.tab.c"
 
 #ifdef short
 # undef short
@@ -1352,7 +1352,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1356 "generated/rpcalc.tab.c"
+#line 1356 "../generated/rpcalc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1571,42 +1571,5 @@ yyreturn:
 
 /* Additional C code */
 
-/* Lexical analyzer returns a double floating point 
-   number on the stack and the token NUM, or the ASCII
-   character read if not a number.  Skips all blanks
-   and tabs, returns 0 for EOF. */
-
-int yylex ()
-{
-  int c;
-
-  /* skip white space  */
-  while ((c = getchar ()) == ' ' || c == '\t')  
-    ;
-  /* process numbers   */
-  if (c == '.' || isdigit (c))                
-    {
-      ungetc (c, stdin);
-      scanf ("%lf", &yylval);
-      return NUM;
-    }
-  /* return end-of-file  */
-  if (c == EOF)                            
-    return 0;
-  /* return single chars */
-  return c;                                
-}
-
-void yyerror (s)  /* Called by yyparse on error */
-     char *s;
-{
-  printf ("%s\n", s);
-}
-
-int main ()
-{
-  yyparse ();
-
-  return 0;
-}
+#include "../src/calc_main.h"
 
