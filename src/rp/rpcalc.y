@@ -1,5 +1,6 @@
 /* Reverse polish notation (RPN) calculator */
 
+/* C Declarations */
 %{
 #include <math.h> // pow
 #include <stdio.h> // printf
@@ -15,8 +16,8 @@ void yyerror (char *s);
 /* Bison (BI) Declarations */
 %token NUM
 
+/* Grammar Rules */
 %% 
-/* Grammar Rules and Actions follow */
 input:    /* empty */
         | input line
 ;
@@ -39,4 +40,4 @@ exp:      NUM             { $$ = $1;         }
 
 /* Additional C code */
 
-#include "../src/calc_main.h"
+#include "../../src/common/calc_main.h"

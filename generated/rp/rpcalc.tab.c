@@ -76,7 +76,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 3 "rpcalc.y"
+#line 4 "rp/rpcalc.y"
 
 #include <math.h> // pow
 #include <stdio.h> // printf
@@ -120,7 +120,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 124 "../generated/rpcalc.tab.c"
+#line 124 "../generated/rp/rpcalc.tab.c"
 
 #ifdef short
 # undef short
@@ -405,8 +405,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    20,    20,    21,    24,    25,    28,    29,    30,    31,
-      32,    34,    36
+       0,    21,    21,    22,    25,    26,    29,    30,    31,    32,
+      33,    35,    37
 };
 #endif
 
@@ -1311,48 +1311,48 @@ yyreduce:
   switch (yyn)
     {
         case 5:
-#line 25 "rpcalc.y"
+#line 26 "rp/rpcalc.y"
     { printf ("\t%.10g\n", (yyvsp[(1) - (2)])); ;}
     break;
 
   case 6:
-#line 28 "rpcalc.y"
+#line 29 "rp/rpcalc.y"
     { (yyval) = (yyvsp[(1) - (1)]);         ;}
     break;
 
   case 7:
-#line 29 "rpcalc.y"
+#line 30 "rp/rpcalc.y"
     { (yyval) = (yyvsp[(1) - (3)]) + (yyvsp[(2) - (3)]);    ;}
     break;
 
   case 8:
-#line 30 "rpcalc.y"
+#line 31 "rp/rpcalc.y"
     { (yyval) = (yyvsp[(1) - (3)]) - (yyvsp[(2) - (3)]);    ;}
     break;
 
   case 9:
-#line 31 "rpcalc.y"
+#line 32 "rp/rpcalc.y"
     { (yyval) = (yyvsp[(1) - (3)]) * (yyvsp[(2) - (3)]);    ;}
     break;
 
   case 10:
-#line 32 "rpcalc.y"
+#line 33 "rp/rpcalc.y"
     { (yyval) = (yyvsp[(1) - (3)]) / (yyvsp[(2) - (3)]);    ;}
     break;
 
   case 11:
-#line 34 "rpcalc.y"
+#line 35 "rp/rpcalc.y"
     { (yyval) = pow ((yyvsp[(1) - (3)]), (yyvsp[(2) - (3)])); ;}
     break;
 
   case 12:
-#line 36 "rpcalc.y"
+#line 37 "rp/rpcalc.y"
     { (yyval) = -(yyvsp[(1) - (2)]);        ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1356 "../generated/rpcalc.tab.c"
+#line 1356 "../generated/rp/rpcalc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1566,10 +1566,10 @@ yyreturn:
 }
 
 
-#line 38 "rpcalc.y"
+#line 39 "rp/rpcalc.y"
 
 
 /* Additional C code */
 
-#include "../src/calc_main.h"
+#include "../../src/common/calc_main.h"
 

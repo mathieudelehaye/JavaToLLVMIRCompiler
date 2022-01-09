@@ -1,5 +1,6 @@
 /* Infix notation (IN) calculator */
 
+/* C Declarations */
 %{
 #include <math.h> // pow
 #include <stdio.h> // printf
@@ -19,7 +20,7 @@ void yyerror (char *s);
 %left NEG     /* negation--unary minus */
 %right '^'    /* exponentiation        */
 
-/* Grammar follows */
+/* Grammar Rules */
 %%
 input:    /* empty string */
         | input line
@@ -27,6 +28,7 @@ input:    /* empty string */
 
 line:     '\n'
         | exp '\n'  { printf ("\t%.10g\n", $1); }
+        | error '\n' { yyerrok;                  }
 ;
 
 exp:      NUM                { $$ = $1;         }
@@ -43,4 +45,4 @@ exp:      NUM                { $$ = $1;         }
 
 /* Additional C code */
 
-#include "../src/calc_main.h"
+#include "../../src/common/calc_main.h"
