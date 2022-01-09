@@ -5,7 +5,7 @@ Use example:
 
 ```
 cd src
-make rp
-../build/rpcalc # Ctrl+D to leave
+make rp -B
+../build/rp/rpcalc # Ctrl+D to leave
 make clean
 ```
