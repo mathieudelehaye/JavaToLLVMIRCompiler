@@ -17,8 +17,8 @@ double     val;  // returning numbers
 symrec  *tptr;   // returning symbol-table pointers
 }
 
-%token <val>  NUM        /* Simple double precision number   */
-%token <tptr> VAR FNCT   /* Variable and Function            */
+%token <val>  NUM           /* Simple double precision number   */
+%token <tptr> NVAR VAR FNCT  /* Uninitialized (New) Variable, Variable and Function  */
 %type  <val>  exp
 
 %right '='
@@ -42,6 +42,7 @@ line:
 exp:      NUM            { $$ = $1;                         }
     | VAR                { $$ = $1->value.var;              }
     | VAR '=' exp        { $$ = $3; $1->value.var = $3;     }
+    | NVAR '=' exp       { printf("1\n"); $$ = $3; $1->value.var = $3;     }
     | FNCT '(' exp ')'   { $$ = (*($1->value.fnctptr))($3); }
     | exp '+' exp        { $$ = $1 + $3;                    }
     | exp '-' exp        { $$ = $1 - $3;                    }
