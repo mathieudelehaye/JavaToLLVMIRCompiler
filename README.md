@@ -16,7 +16,5 @@ flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.j
 - Calculators:
 ```
 cd src/calculators
-make rp -B
-../build/rp/rpcalc # Ctrl+D to leave
-make clean
+bison incalc.y; clang incalc.tab.c lexer.c -o calc; ./calc
 ```
