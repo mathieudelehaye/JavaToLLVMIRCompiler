@@ -4,7 +4,6 @@
 %{
 #include <math.h> // pow
 #include <stdio.h> // printf
-#include <ctype.h>
 
 #define YYSTYPE double
 
@@ -45,4 +44,9 @@ exp:      NUM                { $$ = $1;         }
 
 /* Additional C code */
 
-#include "../../src/common/calc_main.h"
+int main ()
+{
+  yyparse ();
+
+  return 0;
+}
