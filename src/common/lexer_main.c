@@ -2,10 +2,13 @@
 
 #define YYSTYPE double
 
+// defined in the lexer and declared here
 extern char *yytext;
-YYSTYPE yylval;
 extern FILE *yyin;
 extern int yylex ();
+
+// defined in the parser, which this main module replaces in standalone mode
+YYSTYPE yylval;
 
 int main(int argc, char ** argv)
 {

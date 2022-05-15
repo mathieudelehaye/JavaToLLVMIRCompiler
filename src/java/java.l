@@ -7,7 +7,14 @@
 /* Reads only one input file */
 %option noyywrap
 
-/* Rules */
+/* Rules for token / terminal symbol lexing:
+- Separators
+- Reserved words
+- Identifiers
+- String and integer literals
+- Operators
+- Dot character
+*/
 %%
 
 [ \n] ;
@@ -44,31 +51,3 @@
 %%
 
 /* User code */
-
-// Uncomment to unit test the lexer
-
-/*
-int main(int argc, char ** argv)
-{
-    if (argc != 2) {
-        printf("OVERVIEW: Java language lexer\n");
-        printf("USAGE: lexer file\n");
-        return -1;
-    }
-
-    FILE *fp;
-    char * filename = argv[1];
-    yyin = fopen(filename,"r");
-
-    int ret = 0;
-    do
-    {
-        ret = yylex();
-        printf("%d: %s\n",ret, yytext);
-    } while (ret != 0);
-
-	fclose(fp);
-
-    return 0;
-}
-*/

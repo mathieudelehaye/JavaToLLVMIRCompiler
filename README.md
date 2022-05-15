@@ -9,6 +9,11 @@ Use examples:
 - Java parser:
 ```
 cd src/java
+
+# Run lexer in standalone mode
+flex java.l; clang lex.yy.c ../common/lexer_main.c -o lexer; ./lexer
+
+# Run parser
 flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.java
 
 ```
@@ -18,7 +23,7 @@ flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.j
 cd src/calc
 
 # Run lexer in standalone mode
-flex calc.l; clang lex.yy.c lexer_main.c -o lexer; ./lexer
+flex calc.l; clang lex.yy.c ../common/lexer_main.c -o lexer; ./lexer # Ctrl+D to leave
 
 # Run parser
 flex calc.l; bison calc.y; clang calc.tab.c lex.yy.c -o calc; ./calc # Ctrl+D to leave
