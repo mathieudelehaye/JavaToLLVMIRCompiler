@@ -13,8 +13,13 @@ flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.j
 
 ```
 
-- Calculators:
+- Calculator:
 ```
-cd src/calculators
-bison incalc.y; clang incalc.tab.c lexer.c -o calc; ./calc # Ctrl+D to leave
+cd src/calc
+
+# Run lexer in standalone mode
+flex calc.l; clang lex.yy.c lexer_main.c -o lexer; ./lexer
+
+# Run parser
+flex calc.l; bison calc.y; clang calc.tab.c lex.yy.c -o calc; ./calc # Ctrl+D to leave
 ```

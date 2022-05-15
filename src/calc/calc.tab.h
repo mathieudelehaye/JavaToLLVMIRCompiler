@@ -1,3 +1,5 @@
+#define YYSTYPE double
+
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
