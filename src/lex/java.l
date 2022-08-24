@@ -1,6 +1,6 @@
 /* Definitions */ 
 %{
-#include "../../include/java.tab.h"
+#include "../../include/parser/java.tab.h"
 %}
 
 /* Flex options */
@@ -38,6 +38,15 @@
 "String" {return STRING_TYPE;}
 "boolean" {return BOOLEAN_TYPE;}
 "void" {return VOID_TYPE;}
+
+"{" {return LEFT_CURLY_BRACKET;}
+"}" {return RIGHT_CURLY_BRACKET;}
+
+"(" {return LEFT_ROUND_BRACKET;}
+")" {return RIGHT_ROUND_BRACKET;}
+
+";" {return SEMICOLON;}
+"." {return DOT;}
 
 [A-z][A-z0-9]* {return NAME;}
 

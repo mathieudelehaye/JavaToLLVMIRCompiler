@@ -5,12 +5,12 @@ TODO:
 - generate an abstract syntax tree (AST) and LLVM-IR intermediate code from the syntactic analysis.
 - implement cmake.
 
-Use example:
+Use:
 ```
-cd src/java
+cd /project/root
 
 # Run lexer in standalone mode
-flex ./src/lex/java.l; mv ./lex.yy.c ./build/generated/lexer.cpp; clang++ ./build/generated/lexer.cpp ./src/cpp/lexer_main.cpp -o build/bin/lexer; ./build/bin/lexer test_data/hello.java
+./run_lexer.sh
 
 # Run parser
 flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.java
