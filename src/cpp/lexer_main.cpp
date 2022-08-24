@@ -1,4 +1,4 @@
-#include "../java/java.tab.h" // yytokentype
+#include "../../include/java.tab.h" // yytokentype
 
 #include <iostream>
 #include <stdio.h>

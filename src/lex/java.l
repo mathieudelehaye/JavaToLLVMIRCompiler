@@ -1,6 +1,6 @@
 /* Definitions */ 
 %{
-#include "java.tab.h"
+#include "../../include/java.tab.h"
 %}
 
 /* Flex options */

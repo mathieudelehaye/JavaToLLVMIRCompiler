@@ -1,31 +1,18 @@
 # BisonParsers
-Some parsers and lexical analyzers created with the GNU Bison and Flex open source tools.
+A parser and lexical analyzer (lexer) for the Java language, created with the GNU Bison and Flex open source tools. It is able to parse a simple Java program.
 
-A parser for the Java language has been added, which is able to parse a simple Java program.
+TODO: 
+- generate an abstract syntax tree (AST) and LLVM-IR intermediate code from the syntactic analysis.
+- implement cmake.
 
-TODO: generate an abstract syntax tree (AST) and LLVM-IR intermediate code from the syntactic 
-analysis.
-
-Use examples:
-- Java parser:
+Use example:
 ```
 cd src/java
 
 # Run lexer in standalone mode
-flex java.l; clang lex.yy.c ../common/lexer_main.c -o lexer; ./lexer
+flex ./src/lex/java.l; mv ./lex.yy.c ./build/generated/lexer.cpp; clang++ ./build/generated/lexer.cpp ./src/cpp/lexer_main.cpp -o build/bin/lexer; ./build/bin/lexer test_data/hello.java
 
 # Run parser
 flex java.l; bison java.y; clang java.tab.c lex.yy.c -o parser; ./parser hello.java
 
-```
-
-- Calculator:
-```
-cd src/calc
-
-# Run lexer in standalone mode
-flex calc.l; clang lex.yy.c ../common/lexer_main.c -o lexer; ./lexer # Ctrl+D to leave
-
-# Run parser
-flex calc.l; bison calc.y; clang calc.tab.c lex.yy.c -o calc; ./calc # Ctrl+D to leave
 ```
