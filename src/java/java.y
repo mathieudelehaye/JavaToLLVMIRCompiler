@@ -2,7 +2,9 @@
 %{
 #include <stdio.h>
 
-//#define YYDEBUG 1
+#define YYDEBUG 1
+
+#define YYSTYPE char*
 
 int classes=0;
 int funcs=0;
@@ -42,8 +44,13 @@ extern FILE *yyin;
 /* Grammar Rules*/
 %%
 
-Root: Class Root | /*empty*/ {printf("classes: %d\n", classes); printf("functions: %d\n", funcs); printf("method_calls: %d\n", method_calls);} ;
-Class: ClassType NAME '{' Functions '}' {classes++;};
+Root: Class Root 
+   | /*empty*/ { printf("classes: %d\n", classes); printf("functions: %d\n", funcs); printf("method_calls: %d\n", method_calls); } 
+;
+Class: ClassType NAME '{' Functions '}' 
+{ 
+   classes++;
+};
 ClassType: CLASS;
 Functions: Function Functions | /*empty*/ ;
 Function: Modifier Static Type NAME '(' FormalArguments ')' '{' Commands '}' {funcs++;} ;
@@ -57,7 +64,9 @@ Commands: Command Commands | /*empty*/ ;
 Command: MethodCall ';' ;
 MethodCall: References '(' ActualArguments ')' {method_calls++;};
 References: Reference References | /*empty*/ ;
-Reference: NAME '.' | NAME ;
+Reference: NAME '.' 
+   | NAME { printf("%s\n", yyval); YY_SYMBOL_PRINT("Name = ", NAME, &yyval, null)	 }
+;
 ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 ActualArgument: STRING  ArgumentSeparator ;
 
@@ -66,7 +75,7 @@ ActualArgument: STRING  ArgumentSeparator ;
 /* Additional C Code */
 int main (int argc, char *argv[])
 {
-   //yydebug=1;
+   yydebug=1;
 
    if (argc != 2) {
       printf("OVERVIEW: Java language parser\n");

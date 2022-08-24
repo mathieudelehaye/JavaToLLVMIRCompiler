@@ -1,7 +1,8 @@
 # BisonParsers
-Some parsers and lexical analyzers created with GNU Bison and Flex open source tools.
+Some parsers and lexical analyzers created with the GNU Bison and Flex open source tools.
 
 A parser for the Java language has been added, which is able to parse a simple Java program.
+
 TODO: generate an abstract syntax tree (AST) and LLVM-IR intermediate code from the syntactic 
 analysis.
 
