@@ -6,10 +6,9 @@ build/*
 *.yy.c
 *.ll
 
-calc
 lexer
 parser
-hello
+output.txt
 
 # Prerequisites
 *.d
