@@ -1,6 +1,5 @@
 .DS_Store
 *.log
-*.json
 build/*
 *.tab.c
 *.yy.c
@@ -11,6 +10,8 @@ info.plist
 lexer
 parser
 output.txt
+settings.json
+
 
 # Prerequisites
 *.d
