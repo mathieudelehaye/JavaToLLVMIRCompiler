@@ -1,15 +1,10 @@
 #include "../../include/cpp/TokenOutput.h"
-#include "../../include/parser/java.tab.h" // yytokentype
+#include "../../include/parser/java.tab.h" // yytokentype, yyget_text, yylex
 
 #include <iostream>
-#include <stdio.h>
+#include <sstream>
 
 #define YYSTYPE double
-
-// defined in the lexer and declared here
-extern char *yytext;
-extern FILE *yyin;
-extern int yylex ();
 
 // defined in the parser, which this main module replaces in standalone mode
 YYSTYPE yylval;
@@ -18,6 +13,8 @@ YYSTYPE yylval;
 int main(int argc, char ** argv)
 {
     FILE *fp;
+
+    std::stringstream tokenIds, semanticValues;
     
     if (argc < 1 || argc > 2) 
     {
@@ -29,7 +26,8 @@ int main(int argc, char ** argv)
     if (argc == 2)
     {
         const char * filename = argv[1];
-        yyin = fopen(filename,"r");
+        FILE* yyin = fopen(filename,"r");
+        yyset_in(yyin);
     }
 
     int ret = 0;
@@ -37,9 +35,13 @@ int main(int argc, char ** argv)
     TokenOutput output {};
     while((ret = yylex()) != 0)
     {
-        std::cout<<output.getName(static_cast<yytokentype>(ret));
+        tokenIds << output.getName(static_cast<yytokentype>(ret));
+        semanticValues << yyget_text() << " ";
     }
     std::cout<<std::endl;
+
+    std::cout<<"tokenIds.str() = "<<tokenIds.str()<<std::endl;
+    std::cout<<"semanticValues.str() = "<<semanticValues.str()<<std::endl;
 
     printf("Returing: EOF received\n");
 

@@ -5,7 +5,9 @@ build/*
 *.tab.c
 *.yy.c
 *.ll
+*.pp.c*
 
+info.plist
 lexer
 parser
 output.txt
