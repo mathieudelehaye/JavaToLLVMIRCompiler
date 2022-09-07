@@ -5,10 +5,11 @@
             "type": "cppdbg", 
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/lexer",
-            "args": [ ""],
-            "stopAtEntry": true,
+            "args": [ "${workspaceFolder}/test_data/hello.java" ],
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],            "externalConsole": false,
+            "environment": [],            
+            "externalConsole": false,
             "MIMode": "lldb" 
         },
     ]
