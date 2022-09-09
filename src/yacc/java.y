@@ -40,6 +40,12 @@ extern FILE *yyin;
 %token OPERATOR
 %token RETURN 47
 %token INT
+%token LEFT_CURLY_BRACKET
+%token RIGHT_CURLY_BRACKET
+%token LEFT_ROUND_BRACKET
+%token RIGHT_ROUND_BRACKET
+%token SEMICOLON
+%token DOT
 
 /* Grammar Rules*/
 %%
@@ -47,13 +53,13 @@ extern FILE *yyin;
 Root: Class Root 
    | /*empty*/ { printf("classes: %d\n", classes); printf("functions: %d\n", funcs); printf("method_calls: %d\n", method_calls); } 
 ;
-Class: ClassType NAME '{' Functions '}' 
+Class: ClassType NAME LEFT_CURLY_BRACKET Functions RIGHT_CURLY_BRACKET 
 { 
    classes++;
 };
 ClassType: CLASS;
 Functions: Function Functions | /*empty*/ ;
-Function: Modifier Static Type NAME '(' FormalArguments ')' '{' Commands '}' {funcs++;} ;
+Function: Modifier Static Type NAME LEFT_ROUND_BRACKET FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {funcs++;} ;
 Modifier: PUBLIC | PRIVATE | PROTECTED ;
 Static: STATIC | /*empty*/ ;
 Type: STRING_TYPE | STRING_ARRAY_TYPE | INT_TYPE | BOOLEAN_TYPE | VOID_TYPE ;
@@ -61,10 +67,10 @@ FormalArguments: FormalArgument FormalArguments | /*empty*/ ;
 FormalArgument: Type NAME ArgumentSeparator ;
 ArgumentSeparator: ',' | /*empty*/ ;
 Commands: Command Commands | /*empty*/ ;
-Command: MethodCall ';' ;
-MethodCall: References '(' ActualArguments ')' {method_calls++;};
+Command: MethodCall SEMICOLON ;
+MethodCall: References LEFT_ROUND_BRACKET ActualArguments RIGHT_ROUND_BRACKET {method_calls++;};
 References: Reference References | /*empty*/ ;
-Reference: NAME '.' 
+Reference: NAME DOT 
    | NAME { printf("%s\n", yyval); YY_SYMBOL_PRINT("Name = ", NAME, &yyval, null)	 }
 ;
 ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
