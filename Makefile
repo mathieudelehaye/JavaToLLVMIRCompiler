@@ -2,14 +2,23 @@ CXXFLAGS = -g -std=c++14 -Wno-deprecated-register
 
 CXX=clang++ $(CXXFLAGS)
 
-build/bin/lexer: build/tmp/lexer.o build/tmp/lexer_main.o build/tmp/TokenOutput.o
-	$(CXX) build/tmp/lexer.o build/tmp/lexer_main.o build/tmp/TokenOutput.o -o build/bin/lexer 
+BIN_DIR = build/bin
+OBJ_DIR = build/tmp
 
-lexer.o: build/generated/lexer.cpp
-	$(CXX) -c build/generated/lexer.cpp -o build/tmp/lexer.o
+$(BIN_DIR)/parser: $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o
+	$(CXX) $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o -o $(BIN_DIR)/parser 
 
-lexer_main.o: src/cpp/lexer_main.cpp
-	$(CXX) -c src/cpp/lexer_main.cpp -o build/tmp/lexer_main.o
+$(BIN_DIR)/lexer: $(OBJ_DIR)/lexer.o $(OBJ_DIR)/lexer_main.o $(OBJ_DIR)/TokenOutput.o
+	$(CXX) $(OBJ_DIR)/lexer.o $(OBJ_DIR)/lexer_main.o $(OBJ_DIR)/TokenOutput.o -o $(BIN_DIR)/lexer 
 
-TokenOutput.o: src/cpp/TokenOutput.cpp
-	$(CXX) -c src/cpp/TokenOutput.cpp -o build/tmp/TokenOutput.o
+$(OBJ_DIR)/parser.o: build/generated/parser.cpp
+	$(CXX) -c build/generated/parser.cpp -o $(OBJ_DIR)/parser.o
+
+$(OBJ_DIR)/lexer.o: build/generated/lexer.cpp
+	$(CXX) -c build/generated/lexer.cpp -o $(OBJ_DIR)/lexer.o
+
+$(OBJ_DIR)/lexer_main.o: src/cpp/lexer_main.cpp
+	$(CXX) -c src/cpp/lexer_main.cpp -o $(OBJ_DIR)/lexer_main.o
+
+$(OBJ_DIR)/TokenOutput.o: src/cpp/TokenOutput.cpp
+	$(CXX) -c src/cpp/TokenOutput.cpp -o $(OBJ_DIR)/TokenOutput.o

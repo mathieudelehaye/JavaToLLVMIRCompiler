@@ -9,9 +9,9 @@ build/*
 info.plist
 lexer
 parser
-output.txt
+*_output.txt
+*_error.txt
 settings.json
-
 
 # Prerequisites
 *.d
