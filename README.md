@@ -16,5 +16,5 @@ cd /project/root
 ./build/bin/lexer test_data/hello.java > lexer_output.txt
 
 # Run the parser
-./build/bin/parser test_data/hello.java > parser_output.txt
+./build/bin/parser test_data/hello.java > parser_output.txt 2> parser_error.txt 
 ```
