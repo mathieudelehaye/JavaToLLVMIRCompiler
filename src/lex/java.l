@@ -51,9 +51,11 @@
 [A-z][A-z0-9]* {return NAME;}
 
 "\""[A-z0-9 ,!]*"\"" {return STRING;}
-"-"?[1-9][0-9]* {return INT;}
+"-"?[1-9][0-9]* { yylval = yytext; return INT;}
 
-"+"|"-"|"*"|"/"|"="|"==" {return OPERATOR;}
+"+"|"-"|"*"|"/"|"==" {return OPERATOR;}
+
+"=" {return ASSIGNMENT_OPERATOR;}
 
 . { return yytext[0]; }
 

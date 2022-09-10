@@ -2,6 +2,9 @@
 %{
 #include <stdio.h>
 
+#include "../../include/cpp/parser_functions.h"
+#include "../../include/parser/java.tab.h"   // yyget_text, yylex
+
 #define YYDEBUG 1
 
 #define YYSTYPE char*
@@ -38,6 +41,7 @@ extern FILE *yyin;
 %token STRING
 %token BOOLEAN
 %token OPERATOR
+%token ASSIGNMENT_OPERATOR
 %token RETURN 47
 %token INT
 %token LEFT_CURLY_BRACKET
@@ -53,28 +57,58 @@ extern FILE *yyin;
 Root: Class Root 
    | /*empty*/ { printf("classes: %d\n", classes); printf("functions: %d\n", funcs); printf("method_calls: %d\n", method_calls); } 
 ;
+
 Class: ClassType NAME LEFT_CURLY_BRACKET Functions RIGHT_CURLY_BRACKET 
 { 
    classes++;
 };
+
 ClassType: CLASS;
+
 Functions: Function Functions | /*empty*/ ;
-Function: Modifier Static Type NAME LEFT_ROUND_BRACKET FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {funcs++;} ;
+
+Function: Modifier Static Type NAME LEFT_ROUND_BRACKET 
+
+FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {funcs++;} ;
+
 Modifier: PUBLIC | PRIVATE | PROTECTED ;
+
 Static: STATIC | /*empty*/ ;
+
 Type: STRING_TYPE | STRING_ARRAY_TYPE | INT_TYPE | BOOLEAN_TYPE | VOID_TYPE ;
+
 FormalArguments: FormalArgument FormalArguments | /*empty*/ ;
+
 FormalArgument: Type NAME ArgumentSeparator ;
+
 ArgumentSeparator: ',' | /*empty*/ ;
+
 Commands: Command Commands | /*empty*/ ;
-Command: MethodCall SEMICOLON ;
-MethodCall: References LEFT_ROUND_BRACKET ActualArguments RIGHT_ROUND_BRACKET {method_calls++;};
+
+Command: VarDeclaration SEMICOLON
+   | MethodCall SEMICOLON ;
+
+MethodCall: References LEFT_ROUND_BRACKET ActualArguments 
+
+RIGHT_ROUND_BRACKET {method_calls++;};
+
 References: Reference References | /*empty*/ ;
+
 Reference: NAME DOT 
-   | NAME { printf("%s\n", yyval); YY_SYMBOL_PRINT("Name = ", NAME, &yyval, null)	 }
-;
+   | NAME 
+{ 
+   //printf("%s\n", yyval);
+};
+
 ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
+
 ActualArgument: STRING  ArgumentSeparator ;
+
+VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR INT 
+{
+   ParseNumberExpr();
+   printf("Integer variable declared: %s\n", yylval); 
+};
 
 %%
 

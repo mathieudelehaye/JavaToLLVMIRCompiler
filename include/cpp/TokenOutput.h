@@ -1,4 +1,3 @@
-// TokenOutput.h
 #pragma once
 
 #include "../../include/parser/java.tab.h" // yytokentype
