@@ -5,13 +5,15 @@ build/*
 *.yy.c
 *.ll
 *.pp.c*
+*_output.txt
+*_error.txt
 
 info.plist
 lexer
 parser
-*_output.txt
-*_error.txt
+hello
 settings.json
+hello.cpp
 
 # Prerequisites
 *.d
@@ -21,6 +23,7 @@ settings.json
 *.lo
 *.o
 *.obj
+*.class
 
 # Precompiled Headers
 *.gch
