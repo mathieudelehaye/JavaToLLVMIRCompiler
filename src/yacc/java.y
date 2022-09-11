@@ -1,19 +1,17 @@
 /* C Declaration */ 
 %{
-#include <stdio.h>
-
 #include "../../include/cpp/parser_functions.h"
-#include "../../include/parser/java.tab.h"   // yyget_text, yylex
+#include "../../include/parser/java.tab.h"
 
 #define YYDEBUG 1
-
-#define YYSTYPE char*
 
 int classes=0;
 int funcs=0;
 int method_calls=0;
 
-void yyerror(const char* msg){printf("Error: %s\n", msg);}
+void yyerror(const char* msg) {
+   std::cout<<"Error: "<<msg<<std::endl;
+}
 
 int yylex (void);
 
@@ -55,8 +53,11 @@ extern FILE *yyin;
 %%
 
 Root: Class Root 
-   | /*empty*/ { printf("classes: %d\n", classes); printf("functions: %d\n", funcs); printf("method_calls: %d\n", method_calls); } 
-;
+   | /*empty*/ { 
+      std::cout<<"classes: "<<classes<<std::endl;
+      std::cout<<"functions: "<<funcs<<std::endl;
+      std::cout<<"method_calls: "<<method_calls<<std::endl; 
+};
 
 Class: ClassType NAME LEFT_CURLY_BRACKET Functions RIGHT_CURLY_BRACKET 
 { 
@@ -95,19 +96,22 @@ RIGHT_ROUND_BRACKET {method_calls++;};
 References: Reference References | /*empty*/ ;
 
 Reference: NAME DOT 
-   | NAME 
-{ 
-   //printf("%s\n", yyval);
-};
+   | NAME ;
 
 ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 
 ActualArgument: STRING  ArgumentSeparator ;
 
-VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR INT 
+VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR // INT 
 {
-   ParseNumberExpr();
-   printf("Integer variable declared: %s\n", yylval); 
+
+
+   /*const auto numExpr = ParseNumberExpr();
+   
+   
+   const auto val = (dynamic_cast<NumberExprAST*>(numExpr.get()))->getVal();
+   std::cout<<"Integer variable declared: "<<static_cast<int>(val))<<std::endl;
+   */
 };
 
 %%
@@ -118,8 +122,8 @@ int main (int argc, char *argv[])
    yydebug=1;
 
    if (argc != 2) {
-      printf("OVERVIEW: Java language parser\n");
-      printf("USAGE: parser file\n");
+      std::cout<<"OVERVIEW: Java language parser"<<std::endl;
+      std::cout<<"USAGE: parser file"<<std::endl;
       return -1;
    }
 
@@ -129,7 +133,7 @@ int main (int argc, char *argv[])
 
    int ret = 0;
    ret = yyparse();
-   printf("Parser: return value: %d, buffer: \"%s\"\n",ret, yytext);
+   std::cout<<"Parser: return value: "<<ret<<", buffer: \""<<yytext<<"\""<<std::endl;
 
    fclose(fp);
 

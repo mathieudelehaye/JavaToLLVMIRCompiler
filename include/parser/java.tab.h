@@ -1,4 +1,5 @@
 #include <stdio.h>   // FILE
+#include <iostream>
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -67,10 +68,12 @@
 #define DOT 284
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef char* YYSTYPE;
+typedef double YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 
+char *yyget_text  (void);
+int yylex (void);
 extern YYSTYPE yylval;

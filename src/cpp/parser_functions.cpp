@@ -1,17 +1,12 @@
 #include "../../include/cpp/parser_functions.h"
-
 #include "../../include/cpp/AST/AST.h"
+#include "../../include/parser/java.tab.h"
 
-// dummy f and var
-double NumVal;
+#include <string> // stod
 
-void getNextToken()
-{
-
-}
 
 std::unique_ptr<ExprAST> ParseNumberExpr() {
-  auto Result = std::make_unique<NumberExprAST>(NumVal);
-  getNextToken(); // consume the number
+  auto Result = std::make_unique<NumberExprAST>(std::stod(std::string(yyget_text())));
+  yylex();  // get next token
   return std::move(Result);
 }

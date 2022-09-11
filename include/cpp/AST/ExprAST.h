@@ -14,6 +14,10 @@ class NumberExprAST : public ExprAST {
 
 public:
   NumberExprAST(double Val) : Val(Val) {}
+
+  double getVal() {
+    return Val;
+  }
 };
 
 // Expression class for referencing a variable

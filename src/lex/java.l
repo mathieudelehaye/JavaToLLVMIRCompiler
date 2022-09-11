@@ -1,6 +1,8 @@
 /* Definitions */ 
 %{
 #include "../../include/parser/java.tab.h"
+
+#include <string>   // stod
 %}
 
 /* Flex options */
@@ -51,7 +53,11 @@
 [A-z][A-z0-9]* {return NAME;}
 
 "\""[A-z0-9 ,!]*"\"" {return STRING;}
-"-"?[1-9][0-9]* { yylval = yytext; return INT;}
+
+"-"?[1-9][0-9]* { 
+    yylval = std::stod(yytext); 
+    return INT;
+}
 
 "+"|"-"|"*"|"/"|"==" {return OPERATOR;}
 
