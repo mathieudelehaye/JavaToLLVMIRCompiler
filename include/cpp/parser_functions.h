@@ -4,5 +4,4 @@
 
 #include "memory"   // unique_ptr
 
-// Parse a number expression object from a token 
-std::unique_ptr<ExprAST> ParseNumberExpr();
+void initParserFunctions();

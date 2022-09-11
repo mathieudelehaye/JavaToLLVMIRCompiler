@@ -7,6 +7,18 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
+      LEFT_ROUND_BRACKET = 40,
+      RIGHT_ROUND_BRACKET = 41,
+      TIMES = 42,
+      PLUS = 43,
+      MINUS = 45,
+      DOT = 46,
+      RETURN = 47,
+      SEMICOLON = 59,
+      SMALLER_THAN = 60,
+      ASSIGNMENT_OPERATOR = 61,
+      LEFT_CURLY_BRACKET = 123,
+      RIGHT_CURLY_BRACKET = 125,
       PUBLIC = 258,
       PRIVATE = 259,
       PROTECTED = 260,
@@ -26,18 +38,22 @@
       STRING = 274,
       BOOLEAN = 275,
       OPERATOR = 276,
-      ASSIGNMENT_OPERATOR = 277,
-      RETURN = 47,
-      INT = 278,
-      LEFT_CURLY_BRACKET = 279,
-      RIGHT_CURLY_BRACKET = 280,  
-      LEFT_ROUND_BRACKET = 281,
-      RIGHT_ROUND_BRACKET = 282,
-      SEMICOLON = 283,
-      DOT = 284,
+      INT = 277
    };
 #endif
 /* Tokens.  */
+#define LEFT_ROUND_BRACKET 40
+#define RIGHT_ROUND_BRACKET 41
+#define TIMES 42
+#define PLUS 43
+#define MINUS 45
+#define DOT 46
+#define RETURN 47
+#define SEMICOLON 59
+#define SMALLER_THAN 60
+#define ASSIGNMENT_OPERATOR 61
+#define LEFT_CURLY_BRACKET 123
+#define RIGHT_CURLY_BRACKET 125
 #define PUBLIC 258
 #define PRIVATE 259
 #define PROTECTED 260
@@ -57,15 +73,7 @@
 #define STRING 274
 #define BOOLEAN 275
 #define OPERATOR 276
-#define ASSIGNMENT_OPERATOR 277
-#define RETURN 47
-#define INT 278
-#define LEFT_CURLY_BRACKET 279
-#define RIGHT_CURLY_BRACKET 280
-#define LEFT_ROUND_BRACKET 281
-#define RIGHT_ROUND_BRACKET 282
-#define SEMICOLON 283
-#define DOT 284
+#define INT 277
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef double YYSTYPE;

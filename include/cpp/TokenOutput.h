@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../include/parser/java.tab.h" // yytokentype
+#include "../../include/parser/java.tab.h" // yyget_text, yylex, yylval
 
 #include <string>
 

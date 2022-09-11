@@ -1,5 +1,5 @@
 #include "../../include/cpp/TokenOutput.h"
-#include "../../include/parser/java.tab.h"
+#include "../../include/parser/java.tab.h"  // yyget_text, yylex, yylval
 
 #include <iostream>
 #include <sstream>

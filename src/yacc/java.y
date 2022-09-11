@@ -1,7 +1,7 @@
 /* C Declaration */ 
 %{
 #include "../../include/cpp/parser_functions.h"
-#include "../../include/parser/java.tab.h"
+#include "../../include/parser/java.tab.h"   // yyget_text, yylex, yylval
 
 #define YYDEBUG 1
 
@@ -20,6 +20,18 @@ extern FILE *yyin;
 %}
 
 /* Bison Declarations */
+%token LEFT_ROUND_BRACKET 40
+%token RIGHT_ROUND_BRACKET 41
+%token TIMES 42
+%token PLUS 43
+%token MINUS 45
+%token DOT 46
+%token RETURN 47
+%token SEMICOLON 59
+%token SMALLER_THAN 60
+%token ASSIGNMENT_OPERATOR 61
+%token LEFT_CURLY_BRACKET 123
+%token RIGHT_CURLY_BRACKET 125
 %token PUBLIC
 %token PRIVATE
 %token PROTECTED
@@ -39,15 +51,7 @@ extern FILE *yyin;
 %token STRING
 %token BOOLEAN
 %token OPERATOR
-%token ASSIGNMENT_OPERATOR
-%token RETURN 47
 %token INT
-%token LEFT_CURLY_BRACKET
-%token RIGHT_CURLY_BRACKET
-%token LEFT_ROUND_BRACKET
-%token RIGHT_ROUND_BRACKET
-%token SEMICOLON
-%token DOT
 
 /* Grammar Rules*/
 %%
@@ -102,13 +106,11 @@ ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 
 ActualArgument: STRING  ArgumentSeparator ;
 
-VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR // INT 
+VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR INT 
 {
-
+   std::cout<<"VarDeclaration detected: yyget_text() = "<<yyget_text()<<std::endl;
 
    /*const auto numExpr = ParseNumberExpr();
-   
-   
    const auto val = (dynamic_cast<NumberExprAST*>(numExpr.get()))->getVal();
    std::cout<<"Integer variable declared: "<<static_cast<int>(val))<<std::endl;
    */
@@ -119,6 +121,7 @@ VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR // INT
 /* Additional C Code */
 int main (int argc, char *argv[])
 {
+   // Parser debug messages sent to standard parser_error
    yydebug=1;
 
    if (argc != 2) {
@@ -126,6 +129,8 @@ int main (int argc, char *argv[])
       std::cout<<"USAGE: parser file"<<std::endl;
       return -1;
    }
+
+   initParserFunctions();
 
    FILE *fp;
    char * filename = argv[1];
