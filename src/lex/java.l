@@ -61,7 +61,7 @@
 
 "+"|"-"|"*"|"/"|"==" {return OPERATOR;}
 
-"=" {return ASSIGNMENT_OPERATOR;}
+"=" {return ASSIGN_OPERATOR;}
 
 . { return yytext[0]; }
 

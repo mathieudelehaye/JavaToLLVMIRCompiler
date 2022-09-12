@@ -1,6 +1,8 @@
 #include <stdio.h>   // FILE
 #include <iostream>
 
+// #define DEBUG_PARSER
+
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
@@ -16,7 +18,7 @@
       RETURN = 47,
       SEMICOLON = 59,
       SMALLER_THAN = 60,
-      ASSIGNMENT_OPERATOR = 61,
+      ASSIGN_OPERATOR = 61,
       LEFT_CURLY_BRACKET = 123,
       RIGHT_CURLY_BRACKET = 125,
       PUBLIC = 258,
@@ -51,7 +53,7 @@
 #define RETURN 47
 #define SEMICOLON 59
 #define SMALLER_THAN 60
-#define ASSIGNMENT_OPERATOR 61
+#define ASSIGN_OPERATOR 61
 #define LEFT_CURLY_BRACKET 123
 #define RIGHT_CURLY_BRACKET 125
 #define PUBLIC 258

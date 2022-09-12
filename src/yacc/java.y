@@ -29,7 +29,7 @@ extern FILE *yyin;
 %token RETURN 47
 %token SEMICOLON 59
 %token SMALLER_THAN 60
-%token ASSIGNMENT_OPERATOR 61
+%token ASSIGN_OPERATOR 61
 %token LEFT_CURLY_BRACKET 123
 %token RIGHT_CURLY_BRACKET 125
 %token PUBLIC
@@ -58,9 +58,11 @@ extern FILE *yyin;
 
 Root: Class Root 
    | /*empty*/ { 
-      std::cout<<"classes: "<<classes<<std::endl;
-      std::cout<<"functions: "<<funcs<<std::endl;
-      std::cout<<"method_calls: "<<method_calls<<std::endl; 
+#ifdef DEBUG_PARSER
+   std::cout<<"classes: "<<classes<<std::endl;
+   std::cout<<"functions: "<<funcs<<std::endl;
+   std::cout<<"method_calls: "<<method_calls<<std::endl; 
+#endif   // DEBUG_PARSER
 };
 
 Class: ClassType NAME LEFT_CURLY_BRACKET Functions RIGHT_CURLY_BRACKET 
@@ -72,9 +74,9 @@ ClassType: CLASS;
 
 Functions: Function Functions | /*empty*/ ;
 
-Function: Modifier Static Type NAME LEFT_ROUND_BRACKET 
-
-FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {funcs++;} ;
+Function: Modifier Static Type NAME LEFT_ROUND_BRACKET FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {
+   funcs++;
+};
 
 Modifier: PUBLIC | PRIVATE | PROTECTED ;
 
@@ -106,14 +108,25 @@ ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 
 ActualArgument: STRING  ArgumentSeparator ;
 
-VarDeclaration: INT_TYPE NAME ASSIGNMENT_OPERATOR INT 
-{
-   std::cout<<"VarDeclaration detected: yyget_text() = "<<yyget_text()<<std::endl;
+VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue;
 
-   /*const auto numExpr = ParseNumberExpr();
-   const auto val = (dynamic_cast<NumberExprAST*>(numExpr.get()))->getVal();
-   std::cout<<"Integer variable declared: "<<static_cast<int>(val))<<std::endl;
-   */
+VarName: NAME 
+{
+   const auto identifier = parseVariableIdentifierExpr();
+
+#ifdef DEBUG_PARSER
+   const auto name = (dynamic_cast<VariableExprAST*>(identifier.get()))->getName();
+   std::cout<<"Variable name = "<<name<<std::endl;
+#endif   // DEBUG_PARSER
+};
+
+VarValue: INT
+{
+   const auto expression = parseNumberExpr();
+#ifdef DEBUG_PARSER
+   const auto value = (dynamic_cast<NumberExprAST*>(expression.get()))->getVal();
+   std::cout<<"Variable value = "<<value<<std::endl;
+#endif   // DEBUG_PARSER
 };
 
 %%
@@ -129,8 +142,6 @@ int main (int argc, char *argv[])
       std::cout<<"USAGE: parser file"<<std::endl;
       return -1;
    }
-
-   initParserFunctions();
 
    FILE *fp;
    char * filename = argv[1];
