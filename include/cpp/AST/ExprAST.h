@@ -17,7 +17,8 @@ class NumberExprAST : public ExprAST
 public:
   NumberExprAST(double _val) : val(_val) {}
 
-  double getVal() {
+  double getVal() const 
+  {
     return val;
   }
 };
@@ -30,7 +31,8 @@ class VariableExprAST : public ExprAST
 public:
   VariableExprAST(const std::string &_name) : name(_name) {}
 
-  std::string getName() {
+  std::string getName() 
+  {
     return name;
   }
 };
@@ -43,8 +45,30 @@ class BinaryExprAST : public ExprAST
 
 public:
   BinaryExprAST(char _op, std::unique_ptr<ExprAST> _lhs,
-                std::unique_ptr<ExprAST> _rhs)
+    std::unique_ptr<ExprAST> _rhs)
     : op(_op), lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
+
+    std::string getText() 
+    {
+      auto exprASTToString = [] (std::unique_ptr<ExprAST>& expr) -> std::string 
+      {
+          const auto varExpr = dynamic_cast<VariableExprAST*>(expr.get());
+          if (varExpr)
+          {
+            return varExpr->getName();
+          }
+
+          const auto numberExpr = dynamic_cast<NumberExprAST*>(expr.get());
+          if (numberExpr)
+          {
+            return std::to_string(static_cast<int>(numberExpr->getVal()));
+          }
+
+          return "";
+      };
+
+      return (exprASTToString(lhs) + op + exprASTToString(rhs));
+  }
 };
 
 // Expression class for function calls

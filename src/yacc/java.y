@@ -17,6 +17,12 @@ int yylex (void);
 
 extern char *yytext;
 extern FILE *yyin;
+
+// Global variables to build the AST
+std::unique_ptr<ExprAST> varIdentifier;
+std::unique_ptr<ExprAST> varExpression;
+std::unique_ptr<ExprAST> varAssignment;
+
 %}
 
 /* Bison Declarations */
@@ -108,23 +114,33 @@ ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 
 ActualArgument: STRING  ArgumentSeparator ;
 
-VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue;
+VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue
+{
+   varAssignment = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varExpression));
+
+#ifdef DEBUG_PARSER
+   const auto expr = dynamic_cast<BinaryExprAST*>(varAssignment.get())->getText();
+   // TODO: store the actual variable type, so we don't need to hardcode it.
+   std::cout<<"Assignment expr = \"int "<<expr<<"\""<<std::endl;
+#endif   // DEBUG_PARSER
+};
 
 VarName: NAME 
 {
-   const auto identifier = parseVariableIdentifierExpr();
+   varIdentifier = parseVariableIdentifierExpr();
 
 #ifdef DEBUG_PARSER
-   const auto name = (dynamic_cast<VariableExprAST*>(identifier.get()))->getName();
+   const auto name = (dynamic_cast<VariableExprAST*>(varIdentifier.get()))->getName();
    std::cout<<"Variable name = "<<name<<std::endl;
 #endif   // DEBUG_PARSER
 };
 
 VarValue: INT
 {
-   const auto expression = parseNumberExpr();
+   varExpression = parseNumberExpr();
+   
 #ifdef DEBUG_PARSER
-   const auto value = (dynamic_cast<NumberExprAST*>(expression.get()))->getVal();
+   const auto value = (dynamic_cast<NumberExprAST*>(varExpression.get()))->getVal();
    std::cout<<"Variable value = "<<value<<std::endl;
 #endif   // DEBUG_PARSER
 };

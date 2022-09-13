@@ -1,7 +1,7 @@
 #include <stdio.h>   // FILE
 #include <iostream>
 
-// #define DEBUG_PARSER
+#define DEBUG_PARSER
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE

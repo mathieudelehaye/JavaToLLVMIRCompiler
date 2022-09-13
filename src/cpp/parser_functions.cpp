@@ -1,5 +1,6 @@
 #include "../../include/cpp/AST/AST.h"
 #include "../../include/cpp/parser_functions.h"
+#include "../../include/parser/java.tab.h"  // yyget_text 
 
 #include <map>
 #include <memory> // unique_ptr
