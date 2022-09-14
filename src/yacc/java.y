@@ -20,8 +20,12 @@ extern FILE *yyin;
 
 // Global variables to build the AST
 std::unique_ptr<ExprAST> varIdentifier;
-std::unique_ptr<ExprAST> varExpression;
+std::unique_ptr<ExprAST> varValue;
 std::unique_ptr<ExprAST> varAssignment;
+
+std::vector<std::unique_ptr<ExprAST>> callPackages;
+std::vector<std::unique_ptr<ExprAST>> callArgs;
+std::unique_ptr<ExprAST> functionCall;
 
 %}
 
@@ -101,46 +105,92 @@ Commands: Command Commands | /*empty*/ ;
 Command: VarDeclaration SEMICOLON
    | MethodCall SEMICOLON ;
 
-MethodCall: References LEFT_ROUND_BRACKET ActualArguments 
+MethodCall: References LEFT_ROUND_BRACKET ActualArguments RIGHT_ROUND_BRACKET 
+{
+   method_calls++;
 
-RIGHT_ROUND_BRACKET {method_calls++;};
+   auto functionName = std::string("");
+   auto itr = callPackages.begin();
+   while(itr != callPackages.end()) 
+   {
+      functionName += dynamic_cast<IdentifierExprAST*>((*itr++).get())->getName();
+      if (itr != callPackages.end())
+      {
+         // Add separator if not the last item 
+         functionName += ".";
+      }
+   }
+
+   functionCall = std::make_unique<CallExprAST>(functionName, callArgs);
+
+#ifdef DEBUG_PARSER
+   const auto expr = dynamic_cast<CallExprAST*>(functionCall.get())->getText();
+   std::cout<<"Call expr = \""<<expr<<"\""<<std::endl;
+#endif   // DEBUG_PARSER
+}; 
 
 References: Reference References | /*empty*/ ;
 
-Reference: NAME DOT 
-   | NAME ;
+Reference: PackageName DOT 
+   | PackageName ;
+
+PackageName: NAME 
+{
+   callPackages.push_back(parseIdentifierExpr());
+
+#ifdef DEBUG_PARSER
+   if (!callPackages.empty())
+   {
+      const auto name = (dynamic_cast<IdentifierExprAST*>(callPackages.back().get()))->getName();
+      std::cout<<"Called package name = "<<name<<std::endl;
+   }
+#endif   // DEBUG_PARSER
+};
 
 ActualArguments: ActualArgument ActualArguments | /*empty*/ ;
 
-ActualArgument: STRING  ArgumentSeparator ;
+ActualArgument: ActualStringArgument ArgumentSeparator ;
+
+ActualStringArgument: STRING 
+{
+   callArgs.push_back(parseStringArgExpr());
+
+#ifdef DEBUG_PARSER
+   if (!callArgs.empty())
+   {
+      const auto val = (dynamic_cast<StringExprAST*>(callArgs.back().get()))->getVal();
+      std::cout<<"Actual argument = "<<val<<std::endl;
+   }
+#endif   // DEBUG_PARSER
+};
 
 VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue
 {
-   varAssignment = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varExpression));
+   varAssignment = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varValue));
 
 #ifdef DEBUG_PARSER
    const auto expr = dynamic_cast<BinaryExprAST*>(varAssignment.get())->getText();
    // TODO: store the actual variable type, so we don't need to hardcode it.
-   std::cout<<"Assignment expr = \"int "<<expr<<"\""<<std::endl;
+   std::cout<<"Declaration expr = \"int "<<expr<<"\""<<std::endl;
 #endif   // DEBUG_PARSER
 };
 
 VarName: NAME 
 {
-   varIdentifier = parseVariableIdentifierExpr();
+   varIdentifier = parseIdentifierExpr();
 
 #ifdef DEBUG_PARSER
-   const auto name = (dynamic_cast<VariableExprAST*>(varIdentifier.get()))->getName();
+   const auto name = (dynamic_cast<IdentifierExprAST*>(varIdentifier.get()))->getName();
    std::cout<<"Variable name = "<<name<<std::endl;
 #endif   // DEBUG_PARSER
 };
 
 VarValue: INT
 {
-   varExpression = parseNumberExpr();
+   varValue = parseNumberExpr();
    
 #ifdef DEBUG_PARSER
-   const auto value = (dynamic_cast<NumberExprAST*>(varExpression.get()))->getVal();
+   const auto value = (dynamic_cast<NumberExprAST*>(varValue.get()))->getVal();
    std::cout<<"Variable value = "<<value<<std::endl;
 #endif   // DEBUG_PARSER
 };

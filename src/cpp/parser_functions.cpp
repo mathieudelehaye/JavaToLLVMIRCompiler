@@ -7,16 +7,23 @@
 #include <string> // stod
 
 
-std::unique_ptr<ExprAST> parseVariableIdentifierExpr()
+std::unique_ptr<ExprAST> parseIdentifierExpr()
 {
   std::string idName = yyget_text();
 
-  return std::make_unique<VariableExprAST>(idName);
+  return std::make_unique<IdentifierExprAST>(idName);
 }
 
 std::unique_ptr<ExprAST> parseNumberExpr()
 {
   auto result = std::make_unique<NumberExprAST>(std::stod(std::string(yyget_text())));
+  return std::move(result);
+}
+
+std::unique_ptr<ExprAST> parseStringArgExpr()
+{
+  // TODO: manage other types of argument than `std::string`.
+  auto result = std::make_unique<StringExprAST>(yyget_text());
   return std::move(result);
 }
 

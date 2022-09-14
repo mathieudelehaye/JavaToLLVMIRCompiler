@@ -23,13 +23,27 @@ public:
   }
 };
 
-// Expression class for referencing a variable
-class VariableExprAST : public ExprAST 
+// Expression class for string literals: e.g. "a string\n"
+class StringExprAST : public ExprAST 
+{
+  std::string val;
+
+public:
+  StringExprAST(const std::string& _val) : val(_val) {}
+
+  std::string getVal() const 
+  {
+    return val;
+  }
+};
+
+// Expression class for referencing an identifier
+class IdentifierExprAST : public ExprAST 
 {
   std::string name;
 
 public:
-  VariableExprAST(const std::string &_name) : name(_name) {}
+  IdentifierExprAST(const std::string &_name) : name(_name) {}
 
   std::string getName() 
   {
@@ -48,26 +62,26 @@ public:
     std::unique_ptr<ExprAST> _rhs)
     : op(_op), lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
 
-    std::string getText() 
+  std::string getText() 
+  {
+    auto exprASTToString = [] (std::unique_ptr<ExprAST>& expr) -> std::string 
     {
-      auto exprASTToString = [] (std::unique_ptr<ExprAST>& expr) -> std::string 
+      const auto varExpr = dynamic_cast<IdentifierExprAST*>(expr.get());
+      if (varExpr)
       {
-          const auto varExpr = dynamic_cast<VariableExprAST*>(expr.get());
-          if (varExpr)
-          {
-            return varExpr->getName();
-          }
+        return varExpr->getName();
+      }
 
-          const auto numberExpr = dynamic_cast<NumberExprAST*>(expr.get());
-          if (numberExpr)
-          {
-            return std::to_string(static_cast<int>(numberExpr->getVal()));
-          }
+      const auto numberExpr = dynamic_cast<NumberExprAST*>(expr.get());
+      if (numberExpr)
+      {
+        return std::to_string(static_cast<int>(numberExpr->getVal()));
+      }
 
-          return "";
-      };
+      return "";
+    };
 
-      return (exprASTToString(lhs) + op + exprASTToString(rhs));
+    return (exprASTToString(lhs) + op + exprASTToString(rhs));
   }
 };
 
@@ -79,6 +93,29 @@ class CallExprAST : public ExprAST
 
 public:
   CallExprAST(const std::string &_callee,
-              std::vector<std::unique_ptr<ExprAST>> _args)
+    std::vector<std::unique_ptr<ExprAST>>& _args)
     : callee(_callee), args(std::move(_args)) {}
+
+  std::string getText() 
+  {
+    auto text = callee + " (";
+
+    auto argsText = std::string("");
+    auto itr = args.begin();
+    while(itr != args.end()) 
+    {
+      argsText += dynamic_cast<StringExprAST*>((*itr++).get())->getVal();
+
+      if (itr != args.end())
+      {
+        // Add separator if not the last item 
+        argsText += ", ";
+      }
+    }
+
+    text += argsText;
+    text += ");";
+
+    return text;
+  }
 };
