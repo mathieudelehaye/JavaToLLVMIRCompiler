@@ -8,8 +8,8 @@ OBJ_DIR = build/tmp
 GEN_DIR = build/generated
 
 # Parser
-$(BIN_DIR)/parser: $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/parser_functions.o $(OBJ_DIR)/ExprAST.o
-	$(CXX) $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/parser_functions.o $(OBJ_DIR)/ExprAST.o -o $(BIN_DIR)/parser
+$(BIN_DIR)/parser: $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/parser_functions.o $(OBJ_DIR)/ExprAST.o $(OBJ_DIR)/generator_functions.o
+	$(CXX) $(OBJ_DIR)/parser.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/parser_functions.o $(OBJ_DIR)/ExprAST.o $(OBJ_DIR)/generator_functions.o -o $(BIN_DIR)/parser
 
 $(OBJ_DIR)/parser.o: $(GEN_DIR)/parser.cpp
 	$(CXX) -c $(GEN_DIR)/parser.cpp -o $(OBJ_DIR)/parser.o
@@ -19,6 +19,9 @@ $(OBJ_DIR)/parser_functions.o: $(CPP_SRC_DIR)/parser_functions.cpp
 
 $(OBJ_DIR)/ExprAST.o: $(CPP_SRC_DIR)/AST/ExprAST.cpp
 	$(CXX) -c $(CPP_SRC_DIR)/AST/ExprAST.cpp -o $(OBJ_DIR)/ExprAST.o
+
+$(OBJ_DIR)/generator_functions.o: $(CPP_SRC_DIR)/generator_functions.cpp
+	$(CXX) -c $(CPP_SRC_DIR)/generator_functions.cpp -o $(OBJ_DIR)/generator_functions.o
 
 # Lexer
 $(BIN_DIR)/lexer: $(OBJ_DIR)/lexer.o $(OBJ_DIR)/lexer_main.o $(OBJ_DIR)/TokenOutput.o

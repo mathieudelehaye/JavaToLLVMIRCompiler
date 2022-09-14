@@ -1,6 +1,7 @@
 /* C Declaration */ 
 %{
 #include "../../include/cpp/parser_functions.h"
+#include "../../include/cpp/generator_functions.h"
 #include "../../include/parser/java.tab.h"   // yyget_text, yylex, yylval
 
 #define YYDEBUG 1
@@ -215,6 +216,8 @@ int main (int argc, char *argv[])
       std::cout<<"USAGE: parser file"<<std::endl;
       return -1;
    }
+
+   InitializeGenerator();
 
    FILE *fp;
    char * filename = argv[1];
