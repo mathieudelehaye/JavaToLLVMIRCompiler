@@ -21,12 +21,11 @@ extern FILE *yyin;
 // Global variables to build the AST
 std::unique_ptr<ExprAST> varIdentifier;
 std::unique_ptr<ExprAST> varValue;
-std::unique_ptr<ExprAST> varAssignment;
 
 std::vector<std::unique_ptr<ExprAST>> callPackages;
 std::vector<std::unique_ptr<ExprAST>> callArgs;
-std::unique_ptr<ExprAST> functionCall;
 
+std::vector<std::unique_ptr<ExprAST>> statementList;
 %}
 
 /* Bison Declarations */
@@ -121,11 +120,15 @@ MethodCall: References LEFT_ROUND_BRACKET ActualArguments RIGHT_ROUND_BRACKET
       }
    }
 
-   functionCall = std::make_unique<CallExprAST>(functionName, callArgs);
+   auto call = std::make_unique<CallExprAST>(functionName, callArgs);
+   statementList.push_back(std::move(call));
 
 #ifdef DEBUG_PARSER
-   const auto expr = dynamic_cast<CallExprAST*>(functionCall.get())->getText();
-   std::cout<<"Call expr = \""<<expr<<"\""<<std::endl;
+   if (!statementList.empty())
+   {
+      const auto expr = dynamic_cast<CallExprAST*>(statementList.back().get())->getText();
+      std::cout<<"Call expr = \""<<expr<<"\""<<std::endl;
+   }
 #endif   // DEBUG_PARSER
 }; 
 
@@ -153,7 +156,7 @@ ActualArgument: ActualStringArgument ArgumentSeparator ;
 
 ActualStringArgument: STRING 
 {
-   callArgs.push_back(parseStringArgExpr());
+   callArgs.push_back(parseStringExpr());
 
 #ifdef DEBUG_PARSER
    if (!callArgs.empty())
@@ -166,12 +169,16 @@ ActualStringArgument: STRING
 
 VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue
 {
-   varAssignment = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varValue));
+   auto decl = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varValue));
+   statementList.push_back(std::move(decl));
 
 #ifdef DEBUG_PARSER
-   const auto expr = dynamic_cast<BinaryExprAST*>(varAssignment.get())->getText();
-   // TODO: store the actual variable type, so we don't need to hardcode it.
-   std::cout<<"Declaration expr = \"int "<<expr<<"\""<<std::endl;
+   if (!statementList.empty())
+   {
+      const auto expr = dynamic_cast<BinaryExprAST*>(statementList.back().get())->getText();
+      // TODO: store the actual variable type, so we don't need to hardcode it.
+      std::cout<<"Declaration expr = \"int "<<expr<<"\""<<std::endl;
+   }
 #endif   // DEBUG_PARSER
 };
 

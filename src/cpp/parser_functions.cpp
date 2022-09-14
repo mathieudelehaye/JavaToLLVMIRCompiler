@@ -20,7 +20,7 @@ std::unique_ptr<ExprAST> parseNumberExpr()
   return std::move(result);
 }
 
-std::unique_ptr<ExprAST> parseStringArgExpr()
+std::unique_ptr<ExprAST> parseStringExpr()
 {
   // TODO: manage other types of argument than `std::string`.
   auto result = std::make_unique<StringExprAST>(yyget_text());
