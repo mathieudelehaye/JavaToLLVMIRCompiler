@@ -6,7 +6,8 @@
 class ExprAST 
 {
 public:
-  virtual ~ExprAST() {}
+  virtual ~ExprAST() = default;
+  virtual llvm::Value *codegen() = 0;
 };
 
 // Expression class for numeric literals: e.g. 1.0
@@ -17,10 +18,9 @@ class NumberExprAST : public ExprAST
 public:
   NumberExprAST(double _val) : val(_val) {}
 
-  double getVal() const 
-  {
-    return val;
-  }
+  llvm::Value *codegen() override;
+
+  double getVal() const;
 };
 
 // Expression class for string literals: e.g. "a string\n"
@@ -31,10 +31,9 @@ class StringExprAST : public ExprAST
 public:
   StringExprAST(const std::string& _val) : val(_val) {}
 
-  std::string getVal() const 
-  {
-    return val;
-  }
+  llvm::Value *codegen() override;
+
+  std::string getVal() const;
 };
 
 // Expression class for referencing an identifier
@@ -45,10 +44,9 @@ class IdentifierExprAST : public ExprAST
 public:
   IdentifierExprAST(const std::string &_name) : name(_name) {}
 
-  std::string getName() 
-  {
-    return name;
-  }
+  llvm::Value *codegen() override;
+
+  std::string getName();
 };
 
 // Expression class for a binary operator
@@ -62,27 +60,9 @@ public:
     std::unique_ptr<ExprAST> _rhs)
     : op(_op), lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
 
-  std::string getText() 
-  {
-    auto exprASTToString = [] (std::unique_ptr<ExprAST>& expr) -> std::string 
-    {
-      const auto varExpr = dynamic_cast<IdentifierExprAST*>(expr.get());
-      if (varExpr)
-      {
-        return varExpr->getName();
-      }
+  llvm::Value *codegen() override;
 
-      const auto numberExpr = dynamic_cast<NumberExprAST*>(expr.get());
-      if (numberExpr)
-      {
-        return std::to_string(static_cast<int>(numberExpr->getVal()));
-      }
-
-      return "";
-    };
-
-    return (exprASTToString(lhs) + op + exprASTToString(rhs));
-  }
+  std::string getText();
 };
 
 // Expression class for function calls
@@ -96,26 +76,7 @@ public:
     std::vector<std::unique_ptr<ExprAST>>& _args)
     : callee(_callee), args(std::move(_args)) {}
 
-  std::string getText() 
-  {
-    auto text = callee + " (";
+  llvm::Value *codegen() override;
 
-    auto argsText = std::string("");
-    auto itr = args.begin();
-    while(itr != args.end()) 
-    {
-      argsText += dynamic_cast<StringExprAST*>((*itr++).get())->getVal();
-
-      if (itr != args.end())
-      {
-        // Add separator if not the last item 
-        argsText += ", ";
-      }
-    }
-
-    text += argsText;
-    text += ");";
-
-    return text;
-  }
+  std::string getText();
 };
