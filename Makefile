@@ -1,4 +1,4 @@
-CXXFLAGS = -g -Wno-deprecated-register -I/usr/local/Cellar/llvm/14.0.6_1/include -std=c++14 -stdlib=libc++ -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -L/usr/local/Cellar/llvm/14.0.6_1/lib -Wl,-search_paths_first -Wl,-headerpad_max_install_names -lLLVM-14
+CXXFLAGS = -g -Wno-deprecated-register -Wno-register -I/usr/local/Cellar/llvm/14.0.6_1/include -std=c++17 -stdlib=libc++ -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -L/usr/local/Cellar/llvm/14.0.6_1/lib -Wl,-search_paths_first -Wl,-headerpad_max_install_names -lLLVM-14
 
 CXX=clang++ $(CXXFLAGS)
 
