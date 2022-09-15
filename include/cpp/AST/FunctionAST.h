@@ -1,28 +1,33 @@
 #pragma once
 
 #include "AST.h"
+#include "ExprAST.h"
+
 
 // Class which represents the "prototype" for a function, which 
 // captures its name, and its argument names (thus implicitly the 
-//number of arguments the function takes).
-class PrototypeAST {
-  std::string Name;
-  std::vector<std::string> Args;
+// number of arguments the function takes).
+class PrototypeAST 
+{
+  std::string name;
+  std::vector<std::string> args;
 
 public:
-  PrototypeAST(const std::string &name, std::vector<std::string> Args)
-    : Name(name), Args(std::move(Args)) {}
+  PrototypeAST(const std::string &_name, std::vector<std::string> _args)
+    : name(_name), args(std::move(_args)) {}
 
-  const std::string &getName() const { return Name; }
+  llvm::Function * codegen();
+  const std::string &getName() const { return name; }
 };
 
 // Class which represents a function definition itself.
-class FunctionAST {
-  std::unique_ptr<PrototypeAST> Proto;
-  std::unique_ptr<ExprAST> Body;
+class FunctionAST 
+{
+  std::unique_ptr<PrototypeAST> proto;
+  std::unique_ptr<ExprAST> body;
 
 public:
-  FunctionAST(std::unique_ptr<PrototypeAST> Proto,
-              std::unique_ptr<ExprAST> Body)
-    : Proto(std::move(Proto)), Body(std::move(Body)) {}
+  FunctionAST(std::unique_ptr<PrototypeAST> _proto,
+    std::unique_ptr<ExprAST> _body)
+    : proto(std::move(_proto)), body(std::move(_body)) {}
 };

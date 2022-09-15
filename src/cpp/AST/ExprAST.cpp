@@ -1,17 +1,19 @@
 #include "../../../include/cpp/AST/ExprAST.h"
+#include "../../../include/cpp/generator_functions.h"  // theContext
 
 
 llvm::Value * NumberExprAST::codegen()
 {
-    return nullptr;
+    return llvm::ConstantFP::get(*(theContext.get()), llvm::APFloat(val));
 }
 
 double NumberExprAST::getVal() const 
 {
-return val;
+    return val;
 }
 
-llvm::Value * StringExprAST::codegen() {
+llvm::Value * StringExprAST::codegen() 
+{
     return nullptr;
 }
 
@@ -20,7 +22,8 @@ std::string StringExprAST::getVal() const
     return val;
 }
 
-llvm::Value * IdentifierExprAST::codegen() {
+llvm::Value * IdentifierExprAST::codegen() 
+{
     return nullptr;
 }
 
@@ -29,7 +32,8 @@ std::string IdentifierExprAST::getName()
     return name;
 }
 
-llvm::Value * BinaryExprAST::codegen() {
+llvm::Value * BinaryExprAST::codegen() 
+{
     return nullptr;
 }
 
@@ -55,7 +59,8 @@ std::string BinaryExprAST::getText()
     return (exprASTToString(lhs) + op + exprASTToString(rhs));
 }
 
-llvm::Value * CallExprAST::codegen() {
+llvm::Value * CallExprAST::codegen() 
+{
     return nullptr;
 }
 

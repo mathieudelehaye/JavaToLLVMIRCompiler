@@ -171,6 +171,8 @@ ActualStringArgument: STRING
 VarDeclaration: Type VarName ASSIGN_OPERATOR VarValue
 {
    auto decl = std::make_unique<BinaryExprAST>('=', std::move(varIdentifier), std::move(varValue));
+
+   // Append to the statement list
    statementList.push_back(std::move(decl));
 
 #ifdef DEBUG_PARSER
@@ -201,6 +203,12 @@ VarValue: INT
    const auto value = (dynamic_cast<NumberExprAST*>(varValue.get()))->getVal();
    std::cout<<"Variable value = "<<value<<std::endl;
 #endif   // DEBUG_PARSER
+
+   if (auto *FnIR = varValue->codegen()) {
+      std::cerr << "Read top-level expression:" ;
+      FnIR->print(llvm::errs());
+      std::cerr << "\n";
+   }
 };
 
 %%
@@ -211,13 +219,14 @@ int main (int argc, char *argv[])
    // Parser debug messages sent to standard parser_error
    yydebug=1;
 
-   if (argc != 2) {
+   if (argc != 2) 
+   {
       std::cout<<"OVERVIEW: Java language parser"<<std::endl;
       std::cout<<"USAGE: parser file"<<std::endl;
       return -1;
    }
 
-   InitializeGenerator();
+   initializeGenerator();
 
    FILE *fp;
    char * filename = argv[1];

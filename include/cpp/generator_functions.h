@@ -4,9 +4,9 @@
 #include <map>
 
 
-extern std::unique_ptr<llvm::LLVMContext> TheContext;
-extern std::unique_ptr<llvm::Module> TheModule;
-extern std::unique_ptr<llvm::IRBuilder<>> Builder;
-extern std::map<std::string, llvm::Value *> NamedValues;
+extern std::unique_ptr<llvm::LLVMContext> theContext;
+extern std::unique_ptr<llvm::Module> theModule;
+extern std::unique_ptr<llvm::IRBuilder<>> builder;
+extern std::map<std::string, llvm::Value *> namedValues;
 
-void InitializeGenerator();
+void initializeGenerator();
