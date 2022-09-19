@@ -1,5 +1,7 @@
-#include "../../include/cpp/AST/FunctionAST.h"  // PrototypeAST
 #include "../../include/cpp/generator_functions.h"
+
+#include "../../include/cpp/AST/FunctionAST.h"  // PrototypeAST
+#include "../../include/cpp/parser_functions.h" // LogError
 
 #include <filesystem> // std::filesystem::current_path, std::filesystem::path
 #include <fstream>  // std::ofstream
@@ -31,15 +33,22 @@ void initializeGenerator()
   prototypes.push_back(PrototypeAST("puts", { "text" }));
 
   // Write the declarations to the output file.
-  auto & functProto = prototypes.back();
-
-  if (auto * fnIR = functProto.codegen()) 
+  for(auto& functProto: prototypes)
   {
-    std::string output;
-    llvm::raw_string_ostream os(output);
-    os << *fnIR;
-    os.flush();
-    
-    outputFile<<output<<std::endl;
+    if (auto * fnIR = functProto.codegen()) 
+    {
+      std::string output;
+      llvm::raw_string_ostream os(output);
+      os << *fnIR;
+      os.flush();
+      
+      outputFile<<output<<std::endl;
+    }
   }
+}
+
+llvm::Value *LogErrorV(const char *Str)
+{
+  LogError(Str);
+  return nullptr;
 }

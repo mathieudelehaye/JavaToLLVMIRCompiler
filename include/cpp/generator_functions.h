@@ -10,3 +10,4 @@ extern std::unique_ptr<llvm::IRBuilder<>> builder;
 extern std::map<std::string, llvm::Value *> namedValues;
 
 void initializeGenerator();
+llvm::Value *LogErrorV(const char *Str);

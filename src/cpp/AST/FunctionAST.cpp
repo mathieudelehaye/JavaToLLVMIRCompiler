@@ -21,3 +21,46 @@ llvm::Function * PrototypeAST::codegen()
 
     return f;
 }
+
+llvm::Function *FunctionAST::codegen() 
+{
+    // First, check for an existing function from a previous 'extern' declaration.
+    llvm::Function *theFunction = theModule->getFunction(proto->getName());
+
+    if (!theFunction)
+    {
+        theFunction = proto->codegen();
+    }
+
+    if (!theFunction)
+    {
+        return nullptr;
+    }
+
+    // Create a new basic block to start insertion into.
+    llvm::BasicBlock *bb = llvm::BasicBlock::Create(*theContext, "entry", theFunction);
+    builder->SetInsertPoint(bb);
+
+    // Record the function arguments in the namedValues map.
+    namedValues.clear();
+    
+    for (auto &arg : theFunction->args())
+    {
+        namedValues[std::string(arg.getName())] = &arg;
+    }
+
+    if (llvm::Value *retVal = body->codegen())
+    {
+        // Finish off the function.
+        builder->CreateRet(retVal);
+
+        // Validate the generated code, checking for consistency.
+        llvm::verifyFunction(*theFunction);
+
+        return theFunction;
+    }
+
+    // Error reading body, remove function.
+    theFunction->eraseFromParent();
+    return nullptr;
+}
