@@ -60,13 +60,27 @@ void initializeGenerator()
     functDef = std::make_unique<FunctionAST>(proto, call);
   }
 
-  // Write the function definition to the output file.
+  // Write the function definitions to the output file.
   {
     if (auto * functIR = functDef->codegen()) 
     {
       std::string output;
       llvm::raw_string_ostream os(output);
       os << *functIR;
+      os.flush();
+      
+      outputFile<<output<<std::endl;
+    }
+  }
+
+  // Define and write to output a string literal
+  auto varDecl = std::make_unique<StringExprAST>("hello world\n");
+  {
+    if (auto * varDeclIR = varDecl->codegen()) 
+    {
+      std::string output;
+      llvm::raw_string_ostream os(output);
+      os << *varDeclIR;
       os.flush();
       
       outputFile<<output<<std::endl;

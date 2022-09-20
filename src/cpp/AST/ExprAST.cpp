@@ -14,7 +14,26 @@ double NumberExprAST::getVal() const
 
 llvm::Value * StringExprAST::codegen() 
 {
-    return nullptr;
+    const std::string strName = ".str";
+    std::vector<llvm::Constant *> chars(val.size() + 1);
+    for(unsigned int i = 0; i < val.size(); i++)
+    {
+        chars[i] = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), val[i]);
+    }
+    // Add the string terminal '0'
+    chars[val.size()] = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 0);
+
+    auto init = llvm::ConstantArray::get(llvm::ArrayType::get   
+        (llvm::Type::getInt8Ty(*theContext), chars.size()), chars);
+
+    llvm::GlobalVariable * gVar = 
+        new llvm::GlobalVariable(*(theModule.get()), init->getType(), true,
+        llvm::GlobalVariable::ExternalLinkage, init, strName);
+    
+    gVar->setLinkage(llvm::GlobalValue::PrivateLinkage);
+    gVar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+
+    return gVar;
 }
 
 std::string StringExprAST::getVal() const 
