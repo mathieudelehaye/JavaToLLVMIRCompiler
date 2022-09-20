@@ -24,7 +24,15 @@ std::string StringExprAST::getVal() const
 
 llvm::Value * IdentifierExprAST::codegen() 
 {
-    return nullptr;
+    // Look this variable up in the function.
+    llvm::Value *V = namedValues[name];
+
+    if (!V)
+    {
+        LogErrorV("Unknown variable name");
+    }
+    
+    return V;
 }
 
 std::string IdentifierExprAST::getName() 
@@ -44,13 +52,13 @@ std::string BinaryExprAST::getText()
         const auto varExpr = dynamic_cast<IdentifierExprAST*>(expr.get());
         if (varExpr)
         {
-        return varExpr->getName();
+            return varExpr->getName();
         }
 
         const auto numberExpr = dynamic_cast<NumberExprAST*>(expr.get());
         if (numberExpr)
         {
-        return std::to_string(static_cast<int>(numberExpr->getVal()));
+            return std::to_string(static_cast<int>(numberExpr->getVal()));
         }
 
         return "";
@@ -61,7 +69,32 @@ std::string BinaryExprAST::getText()
 
 llvm::Value * CallExprAST::codegen() 
 {
-    return nullptr;
+    // Look up the name in the global module table.
+    llvm::Function *calleeF = theModule->getFunction(callee);
+
+    if (!calleeF)
+    {
+        return LogErrorV("Unknown function referenced");
+    }
+
+    // If argument mismatch error.
+    if (calleeF->arg_size() != args.size())
+    {
+        return LogErrorV("Incorrect # arguments passed");
+    }
+
+    std::vector<llvm::Value *> argsV;
+    for (unsigned i = 0, e = args.size(); i != e; ++i) 
+    {
+        argsV.push_back(args[i]->codegen());
+
+        if (!argsV.back())
+        {
+            return nullptr;
+        }
+    }
+
+    return builder->CreateCall(calleeF, argsV, "calltmp");
 }
 
 std::string CallExprAST::getText() 

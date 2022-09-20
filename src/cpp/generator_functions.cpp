@@ -13,7 +13,8 @@ std::unique_ptr<llvm::IRBuilder<>> builder;
 std::map<std::string, llvm::Value *> namedValues;
 
 std::filesystem::path outputFilePath;
-std::vector<PrototypeAST> prototypes;
+std::vector<PrototypeAST> externDecl;
+std::vector<PrototypeAST> functionDef;
 
 void initializeGenerator() 
 {
@@ -30,16 +31,42 @@ void initializeGenerator()
   std::ofstream outputFile{outputFilePath};
   
   // Declare the extern functions.
-  prototypes.push_back(PrototypeAST("puts", { "text" }));
+  externDecl.push_back(PrototypeAST("puts", { "text" }));
 
   // Write the declarations to the output file.
-  for(auto& functProto: prototypes)
+  for(auto& functProto: externDecl)
   {
-    if (auto * fnIR = functProto.codegen()) 
+    if (auto * functIR = functProto.codegen()) 
     {
       std::string output;
       llvm::raw_string_ostream os(output);
-      os << *fnIR;
+      os << *functIR;
+      os.flush();
+      
+      outputFile<<output<<std::endl;
+    }
+  }
+
+  // Define the functions.
+  std::unique_ptr<FunctionAST> functDef;
+  {
+    std::vector<std::string> formalArgs = { "text" };
+    auto proto = std::make_unique<PrototypeAST>("System.out.println", formalArgs);
+
+    std::vector<std::unique_ptr<ExprAST>> calleeArgs;
+    calleeArgs.push_back(std::make_unique<IdentifierExprAST>("text"));
+
+    std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("puts", calleeArgs);
+    functDef = std::make_unique<FunctionAST>(proto, call);
+  }
+
+  // Write the function definition to the output file.
+  {
+    if (auto * functIR = functDef->codegen()) 
+    {
+      std::string output;
+      llvm::raw_string_ostream os(output);
+      os << *functIR;
       os.flush();
       
       outputFile<<output<<std::endl;

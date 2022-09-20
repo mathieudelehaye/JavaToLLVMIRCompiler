@@ -27,8 +27,8 @@ class FunctionAST
   std::unique_ptr<ExprAST> body;
 
 public:
-  FunctionAST(std::unique_ptr<PrototypeAST> _proto,
-    std::unique_ptr<ExprAST> _body)
+  FunctionAST(std::unique_ptr<PrototypeAST>& _proto,
+    std::unique_ptr<ExprAST>& _body)
     : proto(std::move(_proto)), body(std::move(_body)) {}
 
   llvm::Function * codegen();

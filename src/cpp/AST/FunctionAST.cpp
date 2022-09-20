@@ -22,7 +22,7 @@ llvm::Function * PrototypeAST::codegen()
     return f;
 }
 
-llvm::Function *FunctionAST::codegen() 
+llvm::Function * FunctionAST::codegen() 
 {
     // First, check for an existing function from a previous 'extern' declaration.
     llvm::Function *theFunction = theModule->getFunction(proto->getName());
