@@ -27,12 +27,14 @@ public:
 class FunctionAST 
 {
   std::unique_ptr<PrototypeAST> proto;
-  std::unique_ptr<ExprAST> body;
+
+  // Expression whose value will be returned by the function
+  std::unique_ptr<ExprAST> returnExpression;
 
 public:
   FunctionAST(std::unique_ptr<PrototypeAST>& _proto,
-    std::unique_ptr<ExprAST>& _body)
-    : proto(std::move(_proto)), body(std::move(_body)) {}
+    std::unique_ptr<ExprAST>& _returnExpr)
+    : proto(std::move(_proto)), returnExpression(std::move(_returnExpr)) {}
 
   llvm::Function *codegen(
     std::vector<llvm::Value *>& decl, 

@@ -53,7 +53,16 @@ llvm::Function * FunctionAST::codegen(
         namedValues[std::string(arg.getName())] = &arg;
     }
 
-    if (llvm::Value *retVal = body->codegen(
+    // Add a store instruction to the function body
+    auto *ptr = builder->CreateAlloca(
+        llvm::Type::getInt32Ty(*theContext),
+        llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 1), "p");
+    
+    builder->CreateStore(
+        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*theContext), 3), 
+        ptr);
+
+    if (llvm::Value *retVal = returnExpression->codegen(
         decl, statements))
     {
         // Finish off the function.
