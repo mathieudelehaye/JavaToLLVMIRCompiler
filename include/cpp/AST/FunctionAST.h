@@ -16,7 +16,10 @@ public:
   PrototypeAST(const std::string &_name, std::vector<std::string> _args)
     : name(_name), args(std::move(_args)) {}
 
-  llvm::Function * codegen();
+  llvm::Function *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements);
+
   const std::string &getName() const { return name; }
 };
 
@@ -31,5 +34,7 @@ public:
     std::unique_ptr<ExprAST>& _body)
     : proto(std::move(_proto)), body(std::move(_body)) {}
 
-  llvm::Function * codegen();
+  llvm::Function *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements);
 };

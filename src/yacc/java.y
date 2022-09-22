@@ -204,7 +204,7 @@ VarValue: INT
    std::cout<<"Variable value = "<<value<<std::endl;
 #endif   // DEBUG_PARSER
 
-   if (auto *FnIR = varValue->codegen()) {
+   if (auto *FnIR = varValue->codegen(globalDeclarations, localStatements)) {
       std::cerr << "Read top-level expression:" ;
       FnIR->print(llvm::errs());
       std::cerr << "\n";

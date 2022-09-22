@@ -7,7 +7,9 @@ class ExprAST
 {
 public:
   virtual ~ExprAST() = default;
-  virtual llvm::Value *codegen() = 0;
+  virtual llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) = 0;
 };
 
 // Expression class for numeric literals: e.g. 1.0
@@ -18,7 +20,9 @@ class NumberExprAST : public ExprAST
 public:
   NumberExprAST(double _val) : val(_val) {}
 
-  llvm::Value *codegen() override;
+  llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) override;
 
   double getVal() const;
 };
@@ -31,7 +35,9 @@ class StringExprAST : public ExprAST
 public:
   StringExprAST(const std::string& _val) : val(_val) {}
 
-  llvm::Value *codegen() override;
+  llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) override;
 
   std::string getVal() const;
 };
@@ -44,7 +50,9 @@ class IdentifierExprAST : public ExprAST
 public:
   IdentifierExprAST(const std::string &_name) : name(_name) {}
 
-  llvm::Value *codegen() override;
+  llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) override;
 
   std::string getName();
 };
@@ -60,7 +68,9 @@ public:
     std::unique_ptr<ExprAST> _rhs)
     : op(_op), lhs(std::move(_lhs)), rhs(std::move(_rhs)) {}
 
-  llvm::Value *codegen() override;
+  llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) override;
 
   std::string getText();
 };
@@ -77,7 +87,9 @@ public:
     callee(_callee), 
     args(std::move(_args)) {}
 
-  llvm::Value *codegen() override;
+  llvm::Value *codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements) override;
 
   std::string getText();
 };

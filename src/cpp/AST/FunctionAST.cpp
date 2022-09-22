@@ -2,7 +2,9 @@
 #include "../../../include/cpp/generator_functions.h"  // theContext
 
 
-llvm::Function * PrototypeAST::codegen()
+llvm::Function * PrototypeAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     std::vector<llvm::Type *> strings(args.size(), llvm::Type::getInt8PtrTy(*theContext));
     
@@ -22,14 +24,16 @@ llvm::Function * PrototypeAST::codegen()
     return f;
 }
 
-llvm::Function * FunctionAST::codegen() 
+llvm::Function * FunctionAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     // First, check for an existing function from a previous 'extern' declaration.
     llvm::Function *theFunction = theModule->getFunction(proto->getName());
 
     if (!theFunction)
     {
-        theFunction = proto->codegen();
+        theFunction = proto->codegen(decl, statements);
     }
 
     if (!theFunction)
@@ -49,7 +53,8 @@ llvm::Function * FunctionAST::codegen()
         namedValues[std::string(arg.getName())] = &arg;
     }
 
-    if (llvm::Value *retVal = body->codegen())
+    if (llvm::Value *retVal = body->codegen(
+        decl, statements))
     {
         // Finish off the function.
         builder->CreateRet(retVal);

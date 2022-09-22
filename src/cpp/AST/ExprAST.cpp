@@ -2,7 +2,9 @@
 #include "../../../include/cpp/generator_functions.h"  // theContext
 
 
-llvm::Value * NumberExprAST::codegen()
+llvm::Value * NumberExprAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     return llvm::ConstantFP::get(*(theContext.get()), llvm::APFloat(val));
 }
@@ -12,7 +14,9 @@ double NumberExprAST::getVal() const
     return val;
 }
 
-llvm::Value * StringExprAST::codegen() 
+llvm::Value * StringExprAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     const std::string strName = ".str";
     std::vector<llvm::Constant *> chars(val.size() + 1);
@@ -21,11 +25,14 @@ llvm::Value * StringExprAST::codegen()
         chars[i] = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), val[i]);
     }
     // Add the string terminal '0'
-    chars[val.size()] = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 0);
+    chars[val.size()] = llvm::ConstantInt::get(llvm::Type::getInt8Ty
+        (*theContext), 0);
 
     auto init = llvm::ConstantArray::get(llvm::ArrayType::get   
         (llvm::Type::getInt8Ty(*theContext), chars.size()), chars);
 
+    // Global variable declaration
+    // TODO: replace it by a smart pointer
     llvm::GlobalVariable * gVar = 
         new llvm::GlobalVariable(*(theModule.get()), init->getType(), true,
         llvm::GlobalVariable::ExternalLinkage, init, strName);
@@ -33,7 +40,14 @@ llvm::Value * StringExprAST::codegen()
     gVar->setLinkage(llvm::GlobalValue::PrivateLinkage);
     gVar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
 
-    return gVar;
+    // Push straightforwad the IR expression to the stack. So no
+    // need to return it.
+    decl.push_back(gVar);
+
+    // Local variable initialization
+    // builder->CreateGEP(llvm::Type::getInt8Ty(*theContext), chars[0], 0);
+    
+    return nullptr;
 }
 
 std::string StringExprAST::getVal() const 
@@ -41,7 +55,9 @@ std::string StringExprAST::getVal() const
     return val;
 }
 
-llvm::Value * IdentifierExprAST::codegen() 
+llvm::Value * IdentifierExprAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     // Look this variable up in the function.
     llvm::Value *V = namedValues[name];
@@ -59,7 +75,9 @@ std::string IdentifierExprAST::getName()
     return name;
 }
 
-llvm::Value * BinaryExprAST::codegen() 
+llvm::Value * BinaryExprAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     return nullptr;
 }
@@ -86,7 +104,9 @@ std::string BinaryExprAST::getText()
     return (exprASTToString(lhs) + op + exprASTToString(rhs));
 }
 
-llvm::Value * CallExprAST::codegen() 
+llvm::Value * CallExprAST::codegen(
+    std::vector<llvm::Value *>& decl, 
+    std::vector<llvm::Value *>& statements)
 {
     // Look up the name in the global module table.
     llvm::Function *calleeF = theModule->getFunction(callee);
@@ -102,10 +122,24 @@ llvm::Value * CallExprAST::codegen()
         return LogErrorV("Incorrect # arguments passed");
     }
 
+    // If the callee argument is a string literal, replace it
+    // by a local variable. Moreover:
+    // - A global variable must be declared for the string literal
+    // - The local variable must be declared and initialized with 
+    // the address of the global variable.
+    if (auto * strLit = dynamic_cast<StringExprAST*>(args[0].get()))
+    {
+        // Global variable declaration and local variable initialization 
+        strLit->codegen(decl, statements);
+
+        // Remove the string literal argument
+        args.pop_back();
+    }
+
     std::vector<llvm::Value *> argsV;
     for (unsigned i = 0, e = args.size(); i != e; ++i) 
     {
-        argsV.push_back(args[i]->codegen());
+        argsV.push_back(args[i]->codegen(decl, statements));
 
         if (!argsV.back())
         {
