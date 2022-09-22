@@ -13,8 +13,10 @@ std::unique_ptr<llvm::IRBuilder<>> builder;
 std::map<std::string, llvm::Value *> namedValues;
 
 std::filesystem::path outputFilePath;
-std::vector<PrototypeAST> externDecl;
-std::vector<PrototypeAST> functionDef;
+
+std::vector<llvm::Value *> globalDeclarations;
+std::vector<llvm::Value *> localStatements;
+
 
 void initializeGenerator() 
 {
@@ -31,24 +33,24 @@ void initializeGenerator()
   std::ofstream outputFile{outputFilePath};
   
   // Declare the extern functions.
-  externDecl.push_back(PrototypeAST("puts", { "text" }));
-
-  // Write the declarations to the output file.
-  for(auto& functProto: externDecl)
+  auto functProto = PrototypeAST("puts", { "text" });
+  
+  if (auto * functIR = functProto.codegen()) 
   {
-    if (auto * functIR = functProto.codegen()) 
+    globalDeclarations.push_back(functIR);
+  }
+
+  // Define the string literals.
+  {
+    auto strLit = std::make_unique<StringExprAST>("hello world");
+
+    if (auto * strLitIR = strLit->codegen())
     {
-      std::string output;
-      llvm::raw_string_ostream os(output);
-      os << *functIR;
-      os.flush();
-      
-      outputFile<<output<<std::endl;
+      globalDeclarations.push_back(strLitIR);
     }
   }
 
   // Define the functions.
-  std::unique_ptr<FunctionAST> functDef;
   {
     std::vector<std::string> formalArgs = { "text" };
     auto proto = std::make_unique<PrototypeAST>("System.out.println", formalArgs);
@@ -57,34 +59,28 @@ void initializeGenerator()
     calleeArgs.push_back(std::make_unique<IdentifierExprAST>("text"));
 
     std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("puts", calleeArgs);
-    functDef = std::make_unique<FunctionAST>(proto, call);
-  }
+    auto funct = FunctionAST(proto, call);
 
-  // Write the function definitions to the output file.
-  {
-    if (auto * functIR = functDef->codegen()) 
+    if (auto * functIR = funct.codegen()) 
     {
-      std::string output;
-      llvm::raw_string_ostream os(output);
-      os << *functIR;
-      os.flush();
-      
-      outputFile<<output<<std::endl;
+      globalDeclarations.push_back(functIR);
     }
   }
 
-  // Define and write to output a string literal
-  auto varDecl = std::make_unique<StringExprAST>("hello world\n");
+  // Write to the output file
+  for (auto& functIR: globalDeclarations)
   {
-    if (auto * varDeclIR = varDecl->codegen()) 
+    std::string output;
+    llvm::raw_string_ostream os(output);
+    os << *functIR;
+    os.flush();
+
+    if (output[output.length()-1] != '\n')
     {
-      std::string output;
-      llvm::raw_string_ostream os(output);
-      os << *varDeclIR;
-      os.flush();
-      
-      outputFile<<output<<std::endl;
+      output += "\n";
     }
+
+    outputFile<<output<<std::endl;
   }
 }
 
