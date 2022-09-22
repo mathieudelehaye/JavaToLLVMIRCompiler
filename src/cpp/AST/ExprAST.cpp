@@ -19,7 +19,12 @@ llvm::Value * StringExprAST::codegen(
     std::vector<llvm::Value *>& statements)
 {
     const std::string strName = ".str";
-    std::vector<llvm::Constant *> chars(val.size() + 1);
+    const u_int64_t strSize = val.size() + 1;
+    
+    auto * arrayType = llvm::ArrayType::get(llvm::Type::getInt8Ty(*theContext), strSize);
+
+    // Store the string chars in an int array
+    std::vector<llvm::Constant *> chars(strSize);
     for(unsigned int i = 0; i < val.size(); i++)
     {
         chars[i] = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), val[i]);
@@ -28,8 +33,8 @@ llvm::Value * StringExprAST::codegen(
     chars[val.size()] = llvm::ConstantInt::get(llvm::Type::getInt8Ty
         (*theContext), 0);
 
-    auto init = llvm::ConstantArray::get(llvm::ArrayType::get   
-        (llvm::Type::getInt8Ty(*theContext), chars.size()), chars);
+    // Store the initialized vector into a proper data structure
+    auto init = llvm::ConstantArray::get(arrayType, chars);
 
     // Global variable declaration
     // TODO: replace it by a smart pointer
@@ -40,13 +45,18 @@ llvm::Value * StringExprAST::codegen(
     gVar->setLinkage(llvm::GlobalValue::PrivateLinkage);
     gVar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
 
-    // Push straightforwad the IR expression to the stack. So no
+    // Push straightforwad the IR declaration to the stack. So no
     // need to return it.
     decl.push_back(gVar);
 
-    // Local variable initialization
-    // builder->CreateGEP(llvm::Type::getInt8Ty(*theContext), chars[0], 0);
-    
+    auto * arrayVar = builder->CreateAlloca(arrayType, nullptr, ".str");
+
+    builder->CreateGEP(arrayType, arrayVar, 
+        { 
+            llvm::ConstantInt::get(*theContext, llvm::APInt(64, 0)),
+            llvm::ConstantInt::get(*theContext, llvm::APInt(64, 0))
+        }); 
+
     return nullptr;
 }
 
