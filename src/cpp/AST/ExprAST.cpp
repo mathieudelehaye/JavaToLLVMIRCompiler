@@ -5,7 +5,7 @@
 llvm::Value * NumberExprAST::codegen(
     std::vector<llvm::Value *>& decl)
 {
-    return llvm::ConstantFP::get(*(theContext.get()), llvm::APFloat(val));
+    return llvm::ConstantInt::get(*(theContext.get()), llvm::APInt(32, static_cast<int>(val)));
 }
 
 double NumberExprAST::getVal() const 
@@ -43,8 +43,8 @@ llvm::Value * StringExprAST::codegen(
     gVar->setLinkage(llvm::GlobalValue::PrivateLinkage);
     gVar->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
 
-    // Push straightforwad the IR declaration to the stack. So no
-    // need to return it.
+    // Publish straightforwad the IR statement. So no need for the 
+    // function to return it.
     decl.push_back(gVar);
 
     // Store the global variable address to a local variable
@@ -77,11 +77,15 @@ llvm::Value * IdentifierExprAST::codegen(
     std::vector<llvm::Value *>& decl)
 {
     // Look this variable up in the function.
-    llvm::Value *V = namedValues[name];
+    llvm::Value * V = namedValues[name];
 
     if (!V)
     {
-        LogErrorV("Unknown variable name");
+        // TODO: check if the type has been parsed before the identifier
+        // (strong type), before declaring a new variable  
+        V = builder->CreateAlloca(
+            llvm::Type::getInt32Ty(*theContext),
+            llvm::ConstantInt::get(llvm::Type::getInt32Ty(*theContext), 1), name);
     }
     
     return V;
@@ -95,14 +99,25 @@ std::string IdentifierExprAST::getName()
 llvm::Value * BinaryExprAST::codegen(
     std::vector<llvm::Value *>& decl)
 {
-    // Add a store instruction to the function body
-    // auto *ptr = builder->CreateAlloca(
-    //     llvm::Type::getInt32Ty(*theContext),
-    //     llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 1), "p");
-    
-    // builder->CreateStore(
-    //     llvm::ConstantInt::get(llvm::Type::getInt32Ty(*theContext), 3), 
-    //     ptr);
+    llvm::Value * var; 
+
+    switch (op)
+    {
+        case '=':
+            // Declaration or assignment: emit possibly the `alloca`, then
+            // the `store` instruction
+            var = lhs->codegen(decl);
+            
+            // Publish straightforwad the IR statement. So no need for the 
+            // function to return it.
+            builder->CreateStore(
+                rhs->codegen(decl),
+                var);
+            
+            break;
+        default:
+            break;
+    }
 
     return nullptr;
 }

@@ -60,18 +60,26 @@ void initializeGenerator()
     }
   }
 
+  // TODO: move this function defintion outside of the initialization
   {
     std::vector<std::string> formalArgs = {};
     auto proto = std::make_unique<PrototypeAST>("main", formalArgs);
 
+    auto localDecl = std::make_unique<BinaryExprAST>(
+      '=',
+      std::make_unique<IdentifierExprAST>("a"),
+      std::make_unique<NumberExprAST>(3));
+
     std::vector<std::unique_ptr<ExprAST>> calleeArgs;
     calleeArgs.push_back(std::make_unique<StringExprAST>("hello world\n"));
 
-    std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("System.out.println", calleeArgs);
+    auto call = std::make_unique<CallExprAST>(
+      "System.out.println", calleeArgs);
 
     std::vector<std::unique_ptr<ExprAST>> statements;
 
     // The call expression does not provide a return value
+    statements.push_back(std::move(localDecl));
     statements.push_back(std::move(call));
 
     auto funct = FunctionAST(proto, statements);
