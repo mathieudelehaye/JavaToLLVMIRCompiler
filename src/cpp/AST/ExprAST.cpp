@@ -39,7 +39,7 @@ llvm::Value * StringExprAST::codegen(
     // Global variable declaration
     // TODO: replace it by a smart pointer
     llvm::GlobalVariable * gVar = 
-        new llvm::GlobalVariable(*(theModule.get()), init->getType(), true,
+        new llvm::GlobalVariable(*(theModule.get()), arrayType, true,
         llvm::GlobalVariable::ExternalLinkage, init, strName);
     
     gVar->setLinkage(llvm::GlobalValue::PrivateLinkage);
@@ -49,13 +49,19 @@ llvm::Value * StringExprAST::codegen(
     // need to return it.
     decl.push_back(gVar);
 
-    auto * arrayVar = builder->CreateAlloca(arrayType, nullptr, ".str");
+    const std::string localVarName = "cast210";
 
-    builder->CreateGEP(arrayType, arrayVar, 
+    llvm::GetElementPtrInst * inst = llvm::GetElementPtrInst::Create(
+        arrayType,
+        gVar, 
         { 
             llvm::ConstantInt::get(*theContext, llvm::APInt(64, 0)),
             llvm::ConstantInt::get(*theContext, llvm::APInt(64, 0))
-        }); 
+        });
+
+    builder->Insert(
+        inst,
+        localVarName);
 
     return nullptr;
 }
