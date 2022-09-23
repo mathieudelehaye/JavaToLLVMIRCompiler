@@ -48,8 +48,11 @@ void initializeGenerator()
     std::vector<std::unique_ptr<ExprAST>> calleeArgs;
     calleeArgs.push_back(std::make_unique<IdentifierExprAST>("text"));
 
-    std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("puts", calleeArgs);
-    auto funct = FunctionAST(proto, call);
+    std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("puts", calleeArgs, /*storeReturn=*/true);
+    
+    std::vector<std::unique_ptr<ExprAST>> statements;
+
+    auto funct = FunctionAST(proto, statements, call);
 
     if (auto * functIR = funct.codegen(globalDeclarations)) 
     {
@@ -66,7 +69,12 @@ void initializeGenerator()
 
     std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("System.out.println", calleeArgs);
 
-    auto funct = FunctionAST(proto, call);
+    std::vector<std::unique_ptr<ExprAST>> statements;
+
+    // The call expression does not provide a return value
+    statements.push_back(std::move(call));
+
+    auto funct = FunctionAST(proto, statements);
 
     if (auto * functIR = funct.codegen(globalDeclarations))
     {

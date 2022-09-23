@@ -75,12 +75,17 @@ class CallExprAST : public ExprAST
 {
   std::string callee;
   std::vector<std::unique_ptr<ExprAST>> args;
+  
+  // True if the return value must be stored in a variable
+  bool storeReturn;
 
 public:
   CallExprAST(const std::string &_callee,
-    std::vector<std::unique_ptr<ExprAST>>& _args): 
+    std::vector<std::unique_ptr<ExprAST>>& _args,
+    bool _storeReturn = false):
     callee(_callee), 
-    args(std::move(_args)) {}
+    args(std::move(_args)),
+    storeReturn(_storeReturn) {}
 
   llvm::Value *codegen(
     std::vector<llvm::Value *>& decl) override;

@@ -174,7 +174,14 @@ llvm::Value * CallExprAST::codegen(
         }
     }
 
-    return builder->CreateCall(calleeF, argsV, "calltmp");
+    if (storeReturn)
+    {
+        return builder->CreateCall(calleeF, argsV, "calltmp");
+    }
+    else
+    {
+        return builder->CreateCall(calleeF, argsV);
+    }
 }
 
 std::string CallExprAST::getText() 

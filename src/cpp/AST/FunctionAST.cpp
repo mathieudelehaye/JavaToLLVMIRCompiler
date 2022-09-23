@@ -51,19 +51,36 @@ llvm::Function * FunctionAST::codegen(
         namedValues[std::string(arg.getName())] = &arg;
     }
 
-    if (llvm::Value *retVal = returnedExpression->codegen(
-        decl))
+    // Generate the statements
+    for (auto & statement : statements)
     {
-        // Finish off the function.
-        builder->CreateRet(retVal);
-
-        // Validate the generated code, checking for consistency.
-        llvm::verifyFunction(*theFunction);
-
-        return theFunction;
+        statement->codegen(decl);
     }
 
-    // Error reading body, remove function.
-    theFunction->eraseFromParent();
-    return nullptr;
+    // Generate the return expression or return 0
+    if (returnExpression)
+    {
+        if (llvm::Value *retVal = returnExpression->codegen(
+            decl))
+        {
+            // Finish off the function.
+            builder->CreateRet(retVal);
+        }
+        else
+        {
+            // Error reading body, remove function.
+            theFunction->eraseFromParent();
+            return nullptr;
+        }
+    } 
+    else
+    {
+        builder->CreateRet(llvm::ConstantInt::get(llvm::Type::getInt32Ty
+            (*theContext), 0));
+    }
+
+    // Validate the generated code, checking for consistency.
+    llvm::verifyFunction(*theFunction);
+
+    return theFunction;
 }

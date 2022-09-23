@@ -27,16 +27,36 @@ class FunctionAST
 {
   std::unique_ptr<PrototypeAST> proto;
 
-  // Function statements not providing the returned value
+  // Function statements not providing the return value
   std::vector<std::unique_ptr<ExprAST>> statements;
 
   // Expression whose value will be returned by the function
-  std::unique_ptr<ExprAST> returnedExpression;
+  std::unique_ptr<ExprAST> returnExpression;
 
 public:
-  FunctionAST(std::unique_ptr<PrototypeAST>& _proto,
-    std::unique_ptr<ExprAST>& _returnExpr)
-    : proto(std::move(_proto)), returnedExpression(std::move(_returnExpr)) {}
+  FunctionAST(std::unique_ptr<PrototypeAST>& _proto, 
+    std::vector<std::unique_ptr<ExprAST>>& _statements, 
+    std::unique_ptr<ExprAST>& _retExpr): 
+    proto(std::move(_proto)),
+    returnExpression(std::move(_retExpr)) 
+    {
+      setStatements(_statements);
+    }
+
+  FunctionAST(std::unique_ptr<PrototypeAST>& _proto, 
+    std::vector<std::unique_ptr<ExprAST>>& _statements): 
+    proto(std::move(_proto))
+    {
+      setStatements(_statements);
+    }
+
+  void setStatements(std::vector<std::unique_ptr<ExprAST>>& _statements)
+  {
+    for (auto & statement : _statements)
+    {
+      statements.push_back(std::move(statement));
+    }
+  }
 
   llvm::Function *codegen(
     std::vector<llvm::Value *>& decl);
