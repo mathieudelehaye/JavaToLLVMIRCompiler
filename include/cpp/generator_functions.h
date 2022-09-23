@@ -12,4 +12,5 @@ extern std::map<std::string, llvm::Value *> namedValues;
 extern std::vector<llvm::Value *> globalDeclarations;
 
 void initializeGenerator();
+void writeOutputFile(std::string fileName);
 llvm::Value *LogErrorV(const char *Str);

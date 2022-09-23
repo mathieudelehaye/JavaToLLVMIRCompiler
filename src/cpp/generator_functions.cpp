@@ -12,10 +12,7 @@ std::unique_ptr<llvm::Module> theModule;
 std::unique_ptr<llvm::IRBuilder<>> builder;
 std::map<std::string, llvm::Value *> namedValues;
 
-std::filesystem::path outputFilePath;
-
 std::vector<llvm::Value *> globalDeclarations;
-std::vector<llvm::Value *> localStatements;
 
 
 void initializeGenerator() 
@@ -26,11 +23,6 @@ void initializeGenerator()
 
   // Create a new builder for the module.
   builder = std::make_unique<llvm::IRBuilder<>>(*theContext);
-
-  // Create the output file.
-  outputFilePath = std::filesystem::current_path();
-  outputFilePath /= "output.ll";
-  std::ofstream outputFile{outputFilePath};
   
   // Declare the extern functions.
   auto functProto = PrototypeAST("puts", { "text" });
@@ -59,38 +51,15 @@ void initializeGenerator()
       globalDeclarations.push_back(functIR);
     }
   }
+}
 
-  // TODO: move this function defintion outside of the initialization
-  {
-    std::vector<std::string> formalArgs = {};
-    auto proto = std::make_unique<PrototypeAST>("main", formalArgs);
+void writeOutputFile(std::string fileName)
+{
+  // Create and write to the output file.
+  std::filesystem::path outputFilePath = std::filesystem::current_path();
+  outputFilePath /= fileName;
+  std::ofstream outputFile{outputFilePath};
 
-    auto localDecl = std::make_unique<BinaryExprAST>(
-      '=',
-      std::make_unique<IdentifierExprAST>("a"),
-      std::make_unique<NumberExprAST>(3));
-
-    std::vector<std::unique_ptr<ExprAST>> calleeArgs;
-    calleeArgs.push_back(std::make_unique<StringExprAST>("hello world\n"));
-
-    auto call = std::make_unique<CallExprAST>(
-      "System.out.println", calleeArgs);
-
-    std::vector<std::unique_ptr<ExprAST>> statements;
-
-    // The call expression does not provide a return value
-    statements.push_back(std::move(localDecl));
-    statements.push_back(std::move(call));
-
-    auto funct = FunctionAST(proto, statements);
-
-    if (auto * functIR = funct.codegen(globalDeclarations))
-    {
-      globalDeclarations.push_back(functIR);
-    }
-  }
-
-  // Write to the output file
   for (auto& functIR: globalDeclarations)
   {
     std::string output;

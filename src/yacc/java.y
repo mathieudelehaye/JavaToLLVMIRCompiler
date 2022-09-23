@@ -85,7 +85,22 @@ ClassType: CLASS;
 Functions: Function Functions | /*empty*/ ;
 
 Function: Modifier Static Type NAME LEFT_ROUND_BRACKET FormalArguments RIGHT_ROUND_BRACKET LEFT_CURLY_BRACKET Commands RIGHT_CURLY_BRACKET {
+   
    funcs++;
+
+   // TODO: for the moment, only the `main` function can be defined.
+   // So, ensure it can be done as well for other custom functions.
+   std::vector<std::string> formalArgs = {};
+   auto proto = std::make_unique<PrototypeAST>("main", formalArgs);
+
+   auto funct = FunctionAST(proto, statementList);
+   
+   statementList.clear();
+
+   if (auto * functIR = funct.codegen(globalDeclarations))
+   {
+      globalDeclarations.push_back(functIR);
+   }
 };
 
 Modifier: PUBLIC | PRIVATE | PROTECTED ;
@@ -237,6 +252,8 @@ int main (int argc, char *argv[])
    std::cout<<"Parser: return value: "<<ret<<", buffer: \""<<yytext<<"\""<<std::endl;
 
    fclose(fp);
+
+   writeOutputFile("output.ll");
 
    return ret;
 }

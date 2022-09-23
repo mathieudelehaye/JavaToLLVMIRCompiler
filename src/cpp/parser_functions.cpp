@@ -22,8 +22,27 @@ std::unique_ptr<ExprAST> parseNumberExpr()
 
 std::unique_ptr<ExprAST> parseStringExpr()
 {
-  // TODO: manage other types of argument than `std::string`.
-  auto result = std::make_unique<StringExprAST>(yyget_text());
+  std::string text = yyget_text();
+
+  // Remove the first and last '"' chars if they have 
+  // been lexed. Add a new line at the end of the 
+  // string.
+  if (text[0] == '"')
+  {
+    text = text.substr(1, text.length() - 1);
+  }
+
+  if (text[text.length() - 1] == '"')
+  {
+    text = text.substr(0, text.length() - 1);
+  }
+
+  if (text[text.length() - 1] != '\n')
+  {
+    text += "\n";
+  }
+
+  auto result = std::make_unique<StringExprAST>(text);
   return std::move(result);
 }
 

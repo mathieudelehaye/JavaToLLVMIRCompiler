@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../include/cpp/AST/ExprAST.h"
+#include "../../include/cpp/AST/FunctionAST.h"
 
 
 std::unique_ptr<ExprAST> parseIdentifierExpr();
