@@ -1,8 +1,21 @@
-# BisonParsers
-A parser and lexical analyzer (lexer) for the Java language, created with the GNU Bison (https://www.gnu.org/software/bison/) and Flex (https://github.com/westes/flex) open source tools. It is able to parse a simple Java program.
+# JavaToLLVMIRCompiler
+
+A simple compiler front-end for the Java language.
+
+It compiles a simple Java program, as an input, and generate an intermediate 
+representation in LLVM-IR bitcodes (rather than usual bytecodes).
+
+The compiler has been developed in C++.
+
+It uses the following components:
+- A lexical analyzer (lexer), created with the Flex (https://github.com/westes/flex) open source tool and written in the lex language.
+- A parser, created with the GNU Bison (https://www.gnu.org/software/bison/) open source tool and written in the yacc language.
+- An abstract syntax tree (AST) is then generated, before emitting the output using
+the LLVM C++ API (https://llvm.org/docs/ProgrammersManual.html).
 
 TODO: 
-- use cmake.
+- use cmake for the project.
+- for the moment, the user is not able to create a custom function other than `main`.
 
 Use:
 ```
