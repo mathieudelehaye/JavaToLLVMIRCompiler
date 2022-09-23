@@ -49,6 +49,7 @@ llvm::Value * StringExprAST::codegen(
     // need to return it.
     decl.push_back(gVar);
 
+    // Store the global variable address to a local variable
     const std::string localVarName = "cast210";
 
     llvm::GetElementPtrInst * inst = llvm::GetElementPtrInst::Create(
@@ -59,6 +60,9 @@ llvm::Value * StringExprAST::codegen(
             llvm::ConstantInt::get(*theContext, llvm::APInt(64, 0))
         });
 
+    namedValues[localVarName] = inst;
+    
+    // Insert the instruction in the function definition
     builder->Insert(
         inst,
         localVarName);
@@ -139,7 +143,7 @@ llvm::Value * CallExprAST::codegen(
     }
 
     // If the callee argument is a string literal, replace it
-    // by a local variable. Moreover:
+    // by a local variable identifier. Moreover:
     // - A global variable must be declared for the string literal
     // - The local variable must be declared and initialized with 
     // the address of the global variable.
@@ -148,8 +152,11 @@ llvm::Value * CallExprAST::codegen(
         // Global variable declaration and local variable initialization 
         strLit->codegen(decl, statements);
 
-        // Remove the string literal argument
+        // Remove the string literal
         args.pop_back();
+
+        // Add the identifier
+        args.push_back(std::make_unique<IdentifierExprAST>("cast210"));
     }
 
     std::vector<llvm::Value *> argsV;
