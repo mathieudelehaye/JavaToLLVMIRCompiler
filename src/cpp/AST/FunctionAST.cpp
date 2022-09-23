@@ -3,8 +3,7 @@
 
 
 llvm::Function * PrototypeAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     std::vector<llvm::Type *> strings(args.size(), llvm::Type::getInt8PtrTy(*theContext));
     
@@ -25,15 +24,14 @@ llvm::Function * PrototypeAST::codegen(
 }
 
 llvm::Function * FunctionAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     // First, check for an existing function from a previous 'extern' declaration.
     llvm::Function *theFunction = theModule->getFunction(proto->getName());
 
     if (!theFunction)
     {
-        theFunction = proto->codegen(decl, statements);
+        theFunction = proto->codegen(decl);
     }
 
     if (!theFunction)
@@ -45,7 +43,7 @@ llvm::Function * FunctionAST::codegen(
     llvm::BasicBlock *bb = llvm::BasicBlock::Create(*theContext, "entry", theFunction);
     builder->SetInsertPoint(bb);
 
-    // Record the function arguments in the namedValues map.
+    // Record the function arguments in the named values.
     namedValues.clear();
     
     for (auto &arg : theFunction->args())
@@ -53,17 +51,8 @@ llvm::Function * FunctionAST::codegen(
         namedValues[std::string(arg.getName())] = &arg;
     }
 
-    // Add a store instruction to the function body
-    // auto *ptr = builder->CreateAlloca(
-    //     llvm::Type::getInt32Ty(*theContext),
-    //     llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 1), "p");
-    
-    // builder->CreateStore(
-    //     llvm::ConstantInt::get(llvm::Type::getInt32Ty(*theContext), 3), 
-    //     ptr);
-
-    if (llvm::Value *retVal = returnExpression->codegen(
-        decl, statements))
+    if (llvm::Value *retVal = returnedExpression->codegen(
+        decl))
     {
         // Finish off the function.
         builder->CreateRet(retVal);

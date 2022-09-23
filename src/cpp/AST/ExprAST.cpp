@@ -3,8 +3,7 @@
 
 
 llvm::Value * NumberExprAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     return llvm::ConstantFP::get(*(theContext.get()), llvm::APFloat(val));
 }
@@ -15,8 +14,7 @@ double NumberExprAST::getVal() const
 }
 
 llvm::Value * StringExprAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     const std::string strName = ".str";
     const u_int64_t strSize = val.size() + 1;
@@ -76,8 +74,7 @@ std::string StringExprAST::getVal() const
 }
 
 llvm::Value * IdentifierExprAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     // Look this variable up in the function.
     llvm::Value *V = namedValues[name];
@@ -96,9 +93,17 @@ std::string IdentifierExprAST::getName()
 }
 
 llvm::Value * BinaryExprAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
+    // Add a store instruction to the function body
+    // auto *ptr = builder->CreateAlloca(
+    //     llvm::Type::getInt32Ty(*theContext),
+    //     llvm::ConstantInt::get(llvm::Type::getInt8Ty(*theContext), 1), "p");
+    
+    // builder->CreateStore(
+    //     llvm::ConstantInt::get(llvm::Type::getInt32Ty(*theContext), 3), 
+    //     ptr);
+
     return nullptr;
 }
 
@@ -125,8 +130,7 @@ std::string BinaryExprAST::getText()
 }
 
 llvm::Value * CallExprAST::codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements)
+    std::vector<llvm::Value *>& decl)
 {
     // Look up the name in the global module table.
     llvm::Function *calleeF = theModule->getFunction(callee);
@@ -150,7 +154,7 @@ llvm::Value * CallExprAST::codegen(
     if (auto * strLit = dynamic_cast<StringExprAST*>(args[0].get()))
     {
         // Global variable declaration and local variable initialization 
-        strLit->codegen(decl, statements);
+        strLit->codegen(decl);
 
         // Remove the string literal
         args.pop_back();
@@ -162,7 +166,7 @@ llvm::Value * CallExprAST::codegen(
     std::vector<llvm::Value *> argsV;
     for (unsigned i = 0, e = args.size(); i != e; ++i) 
     {
-        argsV.push_back(args[i]->codegen(decl, statements));
+        argsV.push_back(args[i]->codegen(decl));
 
         if (!argsV.back())
         {

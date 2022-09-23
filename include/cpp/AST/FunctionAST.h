@@ -17,8 +17,7 @@ public:
     : name(_name), args(std::move(_args)) {}
 
   llvm::Function *codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements);
+    std::vector<llvm::Value *>& decl);
 
   const std::string &getName() const { return name; }
 };
@@ -28,15 +27,17 @@ class FunctionAST
 {
   std::unique_ptr<PrototypeAST> proto;
 
+  // Function statements not providing the returned value
+  std::vector<std::unique_ptr<ExprAST>> statements;
+
   // Expression whose value will be returned by the function
-  std::unique_ptr<ExprAST> returnExpression;
+  std::unique_ptr<ExprAST> returnedExpression;
 
 public:
   FunctionAST(std::unique_ptr<PrototypeAST>& _proto,
     std::unique_ptr<ExprAST>& _returnExpr)
-    : proto(std::move(_proto)), returnExpression(std::move(_returnExpr)) {}
+    : proto(std::move(_proto)), returnedExpression(std::move(_returnExpr)) {}
 
   llvm::Function *codegen(
-    std::vector<llvm::Value *>& decl, 
-    std::vector<llvm::Value *>& statements);
+    std::vector<llvm::Value *>& decl);
 };

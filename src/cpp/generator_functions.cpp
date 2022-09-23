@@ -35,7 +35,7 @@ void initializeGenerator()
   // Declare the extern functions.
   auto functProto = PrototypeAST("puts", { "text" });
   
-  if (auto * functIR = functProto.codegen(globalDeclarations, localStatements)) 
+  if (auto * functIR = functProto.codegen(globalDeclarations)) 
   {
     globalDeclarations.push_back(functIR);
   }
@@ -51,7 +51,7 @@ void initializeGenerator()
     std::unique_ptr<ExprAST> call = std::make_unique<CallExprAST>("puts", calleeArgs);
     auto funct = FunctionAST(proto, call);
 
-    if (auto * functIR = funct.codegen(globalDeclarations, localStatements)) 
+    if (auto * functIR = funct.codegen(globalDeclarations)) 
     {
       globalDeclarations.push_back(functIR);
     }
@@ -68,7 +68,7 @@ void initializeGenerator()
 
     auto funct = FunctionAST(proto, call);
 
-    if (auto * functIR = funct.codegen(globalDeclarations, localStatements))
+    if (auto * functIR = funct.codegen(globalDeclarations))
     {
       globalDeclarations.push_back(functIR);
     }
@@ -76,21 +76,6 @@ void initializeGenerator()
 
   // Write to the output file
   for (auto& functIR: globalDeclarations)
-  {
-    std::string output;
-    llvm::raw_string_ostream os(output);
-    os << *functIR;
-    os.flush();
-
-    if (output[output.length()-1] != '\n')
-    {
-      output += "\n";
-    }
-
-    outputFile<<output<<std::endl;
-  }
-
-  for (auto& functIR: localStatements)
   {
     std::string output;
     llvm::raw_string_ostream os(output);
