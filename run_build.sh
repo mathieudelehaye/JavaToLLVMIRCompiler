@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # generate the lexer
-flex ./src/lex/java.l
-mv ./lex.yy.c ./build/generated/lexer.cpp
+flex -o build/generated/lexer.cpp ./src/lex/java.l
 
 # generate the parser
-bison ./src/yacc/java.y
-mv ./java.tab.c ./build/generated/parser.cpp
+bison -o ./build/generated/parser.cpp ./src/yacc/java.y
 
 # build the tools
-make
+make clean
+make build/bin/lexer
+make build/bin/parser
