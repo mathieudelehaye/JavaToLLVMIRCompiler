@@ -29,4 +29,7 @@ cd /project/root
 
 # Run the parser
 ./build/bin/parser test_data/hello.java > parser_output.txt 2> parser_error.txt 
+
+# Build the output
+clang output.ll -o output-j -Wno-override-module
 ```
