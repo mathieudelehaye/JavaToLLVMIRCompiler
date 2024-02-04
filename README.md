@@ -13,10 +13,6 @@ It uses the following components:
 - An abstract syntax tree (AST) is then generated, before emitting the output using
 the LLVM C++ API (https://llvm.org/docs/ProgrammersManual.html).
 
-TODO: 
-- use cmake for the project.
-- for the moment, the user is not able to create a custom function other than `main`.
-
 Use:
 ```
 cd /project/root
