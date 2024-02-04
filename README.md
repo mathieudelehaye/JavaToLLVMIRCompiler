@@ -3,7 +3,7 @@
 A compiler front-end for the Java language.
 
 It compiles a simple Java program, as an input, and generate an intermediate 
-representation in LLVM-IR bitcodes (rather than the usual bytecodes).
+representation in LLVM-IR bitcodes (rather than the usual JVM bytecodes).
 
 The compiler has been developed in C++.
 
