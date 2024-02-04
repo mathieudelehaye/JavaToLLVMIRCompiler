@@ -1,6 +1,6 @@
 # JavaToLLVMIRCompiler
 
-A simple compiler front-end for the Java language.
+A compiler front-end for the Java language.
 
 It compiles a simple Java program, as an input, and generate an intermediate 
 representation in LLVM-IR bitcodes (rather than the usual bytecodes).
